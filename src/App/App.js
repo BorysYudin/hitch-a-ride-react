@@ -3,10 +3,12 @@ import React from "react";
 import { Route } from "react-router";
 
 import HomePage from "../HomePage/HomePage";
+import AuthPage from "../AuthPage/AuthPage";
 
 const App = ({ location }) => (
     <div className="container">
-        <Route location={location} exact path="/" component={HomePage} />
+        <Route location={location} exact path="/map" component={HomePage} />
+        <Route location={location} exact path="/" component={AuthPage} />
     </div>
 );
 
