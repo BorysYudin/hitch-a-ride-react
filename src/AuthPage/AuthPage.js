@@ -2,10 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
 
 const styles = {
     page: {
@@ -13,7 +18,7 @@ const styles = {
         height: "100vh",
         display: "flex",
         justifyContent: "center",
-        alignItems: "start",
+        alignItems: "start"
     },
     card: {
         width: 1100,
@@ -28,11 +33,33 @@ const styles = {
         margin: 12
     },
     text: {
-        color: "#fff"
+        color: "#ebebeb",
+        fontFamily: "Lato",
+        fontWeight: 100
+    },
+    dialog: {
+        alignItems: "start"
     }
 };
 
+function Transition(props) {
+    return <Slide direction="down" {...props} timeout={500} />;
+}
+
 class AuthPage extends React.Component {
+    state = {
+        loginDialog: false,
+        registerDialog: false,
+    };
+
+    handleOpen = name => () => {
+        this.setState({[name]: true});
+    };
+
+    handleClose = name => () => {
+        this.setState({[name]: false});
+    };
+
     render() {
         const {classes} = this.props;
         console.log(classes.button);
@@ -49,15 +76,41 @@ class AuthPage extends React.Component {
                         </Typography>
                         <Typography variant="subheading" gutterBottom className={classes.text}>
                             To get a ride please
-                            <Button variant="outlined" className={classes.button}>
+                            <Button variant="outlined" className={classes.button} onClick={this.handleOpen('loginDialog')}>
                                 Login
-                            </Button> or <Button variant="outlined" className={classes.button}>
-                            Register
-                        </Button>
+                            </Button> or
+                            <Button variant="outlined" className={classes.button} onClick={this.handleOpen('loginDialog')}>
+                                Register
+                            </Button>
                         </Typography>
 
                     </CardContent>
                 </Card>
+                <Dialog
+                    open={this.state.loginDialog}
+                    TransitionComponent={Transition}
+                    className={classes.dialog}
+                    keepMounted
+                    onClose={this.handleClose('loginDialog')}
+                >
+                    <DialogTitle id="alert-dialog-slide-title">
+                        {"Use Google's location service?"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            Let Google help apps determine location. This means sending anonymous location data to
+                            Google, even when no apps are running.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleClose('loginDialog')} color="primary">
+                            Disagree
+                        </Button>
+                        <Button onClick={this.handleClose('loginDialog')} color="primary">
+                            Agree
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </div>
         );
     }
