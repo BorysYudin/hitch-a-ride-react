@@ -5,12 +5,9 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
+
+import LoginForm from "./LoginForm";
 
 const styles = {
     page: {
@@ -43,13 +40,17 @@ const styles = {
 };
 
 function Transition(props) {
-    return <Slide direction="down" {...props} timeout={500} />;
+    return <Slide direction="down" {...props} timeout={300} />;
 }
 
 class AuthPage extends React.Component {
     state = {
         loginDialog: false,
         registerDialog: false,
+        login: {
+            email: "",
+            password: ""
+        }
     };
 
     handleOpen = name => () => {
@@ -60,8 +61,19 @@ class AuthPage extends React.Component {
         this.setState({[name]: false});
     };
 
+    handleChange = type => name => event => {
+        event.persist()
+        this.setState(prevState => ({
+            [type]: {
+                ...prevState[type],
+                [name]: event.target.value
+            }
+        }));
+    };
+
     render() {
         const {classes} = this.props;
+        const { login, loginDialog } = this.state;
         console.log(classes.button);
 
         return (
@@ -86,31 +98,13 @@ class AuthPage extends React.Component {
 
                     </CardContent>
                 </Card>
-                <Dialog
-                    open={this.state.loginDialog}
-                    TransitionComponent={Transition}
-                    className={classes.dialog}
-                    keepMounted
-                    onClose={this.handleClose('loginDialog')}
-                >
-                    <DialogTitle id="alert-dialog-slide-title">
-                        {"Use Google's location service?"}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-slide-description">
-                            Let Google help apps determine location. This means sending anonymous location data to
-                            Google, even when no apps are running.
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.handleClose('loginDialog')} color="primary">
-                            Disagree
-                        </Button>
-                        <Button onClick={this.handleClose('loginDialog')} color="primary">
-                            Agree
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                <LoginForm
+                    email={login.email}
+                    password={login.password}
+                    handleClose={this.handleClose('loginDialog')}
+                    handleChange={this.handleChange}
+                    open={loginDialog}
+                />
             </div>
         );
     }
