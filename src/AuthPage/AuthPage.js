@@ -5,9 +5,9 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import Slide from '@material-ui/core/Slide';
 
 import LoginForm from "./LoginForm";
+import RegisterForm from "./RegisterForm";
 
 const styles = {
     page: {
@@ -39,14 +39,12 @@ const styles = {
     }
 };
 
-function Transition(props) {
-    return <Slide direction="down" {...props} timeout={300} />;
-}
 
 class AuthPage extends React.Component {
     state = {
         loginDialog: false,
         registerDialog: false,
+        tab: 0,
         login: {
             email: "",
             password: ""
@@ -61,8 +59,12 @@ class AuthPage extends React.Component {
         this.setState({[name]: false});
     };
 
+    handleTabChange = (event, tab) => {
+        this.setState({tab});
+    };
+
     handleChange = type => name => event => {
-        event.persist()
+        event.persist();
         this.setState(prevState => ({
             [type]: {
                 ...prevState[type],
@@ -73,7 +75,7 @@ class AuthPage extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const { login, loginDialog } = this.state;
+        const {login, loginDialog, registerDialog, tab } = this.state;
         console.log(classes.button);
 
         return (
@@ -88,10 +90,12 @@ class AuthPage extends React.Component {
                         </Typography>
                         <Typography variant="subheading" gutterBottom className={classes.text}>
                             To get a ride please
-                            <Button variant="outlined" className={classes.button} onClick={this.handleOpen('loginDialog')}>
+                            <Button variant="outlined" className={classes.button}
+                                    onClick={this.handleOpen('loginDialog')}>
                                 Login
                             </Button> or
-                            <Button variant="outlined" className={classes.button} onClick={this.handleOpen('loginDialog')}>
+                            <Button variant="outlined" className={classes.button}
+                                    onClick={this.handleOpen('registerDialog')}>
                                 Register
                             </Button>
                         </Typography>
@@ -104,6 +108,15 @@ class AuthPage extends React.Component {
                     handleClose={this.handleClose('loginDialog')}
                     handleChange={this.handleChange}
                     open={loginDialog}
+                />
+                <RegisterForm
+                    email={login.email}
+                    password={login.password}
+                    handleClose={this.handleClose('registerDialog')}
+                    handleChange={this.handleChange}
+                    handleTabChange={this.handleTabChange}
+                    tab={tab}
+                    open={registerDialog}
                 />
             </div>
         );
