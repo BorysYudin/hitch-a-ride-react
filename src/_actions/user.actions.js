@@ -58,8 +58,30 @@ function login(username, password) {
     };
 }
 
-function logout() {
-    return { type: userConstants.LOGOUT };
+function logout(refreshToken) {
+    function request() {
+        return { type: userConstants.LOGOUT_REQUEST };
+    }
+
+    function success() {
+        return { type: userConstants.LOGOUT_SUCCESS };
+    }
+
+    function failure() {
+        return { type: userConstants.LOGOUT_FAILURE };
+    }
+
+    return dispatch => {
+        dispatch(request());
+
+        return userService.login(refreshToken).then(
+            () => {
+                dispatch(success());
+                history.push("/auth");
+            },
+            () => dispatch(failure())
+        );
+    };
 }
 
 const userActions = {

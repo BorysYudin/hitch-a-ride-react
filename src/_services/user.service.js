@@ -9,9 +9,13 @@ const login = (email, password) =>
 const register = data =>
     axios.post("/auth/register", data).then(handleResponse);
 
+const logout = refreshToken =>
+    axios.post("/auth/logout", {refresh_token: refreshToken}).then(handleResponse);
+
 const userService = {
+    register,
     login,
-    register
+    logout
 };
 
 export default userService;

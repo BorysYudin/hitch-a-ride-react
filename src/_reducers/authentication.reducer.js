@@ -25,9 +25,7 @@ export default function authentication(state = initialState, action) {
 
         case userConstants.LOGIN_FAILURE:
         case authenticationConstants.JWT_REFRESH_FAILURE:
-            return { ...initialState };
-
-        case userConstants.LOGOUT:
+        case userConstants.LOGOUT_SUCCESS:
             return { ...initialState };
 
         case authenticationConstants.JWT_REFRESH_REQUEST:
