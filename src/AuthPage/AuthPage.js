@@ -56,14 +56,14 @@ class AuthPage extends React.Component {
         hitchhiker: {
             firstName: "",
             lastName: "",
-            email_hitchhiker: "",
-            password_hitchhiker: ""
+            emailHitchhiker: "",
+            passwordHitchhiker: ""
         },
         driver: {
             firstName: "",
             lastName: "",
-            email_driver: "",
-            password_driver: "",
+            emailDriver: "",
+            passwordDriver: "",
             vehicleName: "",
             vehicleId: ""
         }
@@ -76,10 +76,29 @@ class AuthPage extends React.Component {
 
     handleRegister = () => {
         const {hitchhiker, driver, tab} = this.state;
+
+        let data = null;
+
         if(tab === 0)
-            this.props.register(hitchhiker);
+            data = {
+                first_name: hitchhiker.firstName,
+                last_name: hitchhiker.lastName,
+                email: hitchhiker.emailHitchhiker,
+                password: hitchhiker.passwordHitchhiker,
+                role: "Hitchhiker"
+            };
         else
-            this.props.register(driver);
+            data = {
+                first_name: driver.firstName,
+                last_name: driver.lastName,
+                email: driver.emailDriver,
+                password: driver.passwordDriver,
+                vehicle_name: driver.vehicleName,
+                vehicle_id: driver.vehicleId,
+                role: "Driver"
+            };
+
+        this.props.register(data).catch(error => alert(error));
     };
 
     handleOpen = name => () => {

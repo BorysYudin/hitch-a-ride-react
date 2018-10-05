@@ -2,28 +2,58 @@ import userConstants from "../_constants/user.constants";
 import userService from "../_services/user.service";
 import history from "../_helpers/history";
 
+
+function register(data) {
+    function request() {
+        return { type: userConstants.REGISTER_REQUEST };
+    }
+
+    function success(response) {
+        return { type: userConstants.REGISTER_SUCCESS, ...response };
+    }
+
+    function failure(response) {
+        return { type: userConstants.REGISTER_FAILURE, response };
+    }
+
+    return dispatch => {
+        dispatch(request());
+
+        return userService.register(data).then(
+            response => {
+                dispatch(success(response));
+                history.push("/");
+            },
+            response => {
+                dispatch(failure(response));
+                return Promise.reject(response);
+            }
+        );
+    };
+}
+
 function login(username, password) {
     function request() {
         return { type: userConstants.LOGIN_REQUEST };
     }
 
-    function success(payload) {
-        return { type: userConstants.LOGIN_SUCCESS, ...payload };
+    function success(response) {
+        return { type: userConstants.LOGIN_SUCCESS, ...response };
     }
 
-    function failure(error) {
-        return { type: userConstants.LOGIN_FAILURE, error };
+    function failure(response) {
+        return { type: userConstants.LOGIN_FAILURE, response };
     }
 
     return dispatch => {
         dispatch(request({ username }));
 
         return userService.login(username, password).then(
-            payload => {
-                dispatch(success(payload));
+            response => {
+                dispatch(success(response));
                 history.push("/");
             },
-            error => dispatch(failure(error))
+            response => dispatch(failure(response))
         );
     };
 }
@@ -31,33 +61,6 @@ function login(username, password) {
 function logout() {
     return { type: userConstants.LOGOUT };
 }
-
-function register(data) {
-    function request() {
-        // return { type: userConstants.LOGIN_REQUEST };
-    }
-
-    function success(payload) {
-        // return { type: userConstants.LOGIN_SUCCESS, ...payload };
-    }
-
-    function failure(error) {
-        // return { type: userConstants.LOGIN_FAILURE, error };
-    }
-
-    return dispatch => {
-        // dispatch(request());
-
-        return userService.register(data).then(
-            payload => {
-                // dispatch(success(payload));
-                // history.push("/");
-            },
-            error => dispatch(failure(error))
-        );
-    };
-}
-
 
 const userActions = {
     login,

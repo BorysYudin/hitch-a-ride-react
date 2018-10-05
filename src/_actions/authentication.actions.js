@@ -9,28 +9,28 @@ function refreshToken(dispatch) {
         };
     }
 
-    function success(payload) {
+    function success(response) {
         return {
             type: authenticationConstants.JWT_REFRESH_SUCCESS,
-            ...payload
+            ...response
         };
     }
 
-    function failure(error) {
-        return { type: authenticationConstants.JWT_REFRESH_FAILURE, error };
+    function failure(response) {
+        return { type: authenticationConstants.JWT_REFRESH_FAILURE, response };
     }
 
     const auth = JSON.parse(
-        JSON.parse(localStorage.getItem("persist:ai")).authentication
+        JSON.parse(localStorage.getItem("persist:hitch-a-ride")).authentication
     );
 
     const freshTokenPromise = authenticationService
         .refreshJWT(auth.refresh)
-        .then(payload => {
-            dispatch(success(payload));
-            return payload;
+        .then(response => {
+            dispatch(success(response));
+            return response;
         })
-        .catch(error => dispatch(failure(error)));
+        .catch(response => dispatch(failure(response)));
 
     dispatch(request(freshTokenPromise));
 

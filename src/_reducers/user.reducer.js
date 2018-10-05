@@ -14,7 +14,7 @@ export default function user(state = initialState, action) {
         case userConstants.GET_CURRENT_SUCCESS:
             return {
                 ...initialState,
-                ...action.payload
+                ...action.data
             };
         case userConstants.GET_CURRENT_FAILURE:
             return { ...initialState };

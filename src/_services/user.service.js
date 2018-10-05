@@ -1,11 +1,7 @@
 import axios from "axios";
 
 import authHeader from "../_helpers/auth-header";
-
-const handleResponse = response =>
-    response.status === 200
-        ? response.data
-        : Promise.reject(response.statusText);
+import { handleResponse } from '../_helpers/utils';
 
 const login = (email, password) =>
     axios.post("/auth/login", { email, password }).then(handleResponse);

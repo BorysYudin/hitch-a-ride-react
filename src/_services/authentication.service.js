@@ -6,7 +6,7 @@ const handleResponse = response =>
         : Promise.reject(response.statusText);
 
 const refreshJWT = refresh =>
-    axios.post("/api/token/refresh/", { refresh }).then(handleResponse);
+    axios.post("/refresh", { refresh }).then(handleResponse);
 
 const authenticationService = {
     refreshJWT

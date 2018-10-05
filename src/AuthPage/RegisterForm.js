@@ -167,13 +167,13 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="email_hitchhiker" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="emailHitchhiker" className={classes.formLabel}>
                                 Email
                             </InputLabel>
                             <InputBase
-                                id="email1"
-                                value={hitchhiker.email_hitchhiker}
-                                onChange={handleChange('hitchhiker')('email_hitchhiker')}
+                                id="emailHitchhiker"
+                                value={hitchhiker.emailHitchhiker}
+                                onChange={handleChange('hitchhiker')('emailHitchhiker')}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -181,13 +181,13 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="password_hitchhiker" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="passwordHitchhiker" className={classes.formLabel}>
                                 Password
                             </InputLabel>
                             <InputBase
-                                id="password1"
-                                value={hitchhiker.password_hitchhiker}
-                                onChange={handleChange('hitchhiker')('password_hitchhiker')}
+                                id="passwordHitchhiker"
+                                value={hitchhiker.passwordHitchhiker}
+                                onChange={handleChange('hitchhiker')('passwordHitchhiker')}
                                 type="password"
                                 classes={{
                                     root: classes.inputRoot,
@@ -227,13 +227,13 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="email_driver" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="emailDriver" className={classes.formLabel}>
                                 Email
                             </InputLabel>
                             <InputBase
-                                id="email_driver"
-                                value={driver.email_driver}
-                                onChange={handleChange('driver')('email_driver')}
+                                id="emailDriver"
+                                value={driver.emailDriver}
+                                onChange={handleChange('driver')('emailDriver')}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -241,13 +241,13 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="password_driver" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="passwordDriver" className={classes.formLabel}>
                                 Password
                             </InputLabel>
                             <InputBase
-                                id="password_driver"
-                                value={driver.password_driver}
-                                onChange={handleChange('driver')('password_driver')}
+                                id="passwordDriver"
+                                value={driver.passwordDriver}
+                                onChange={handleChange('driver')('passwordDriver')}
                                 type="password"
                                 classes={{
                                     root: classes.inputRoot,

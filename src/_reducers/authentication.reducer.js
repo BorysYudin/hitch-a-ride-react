@@ -19,8 +19,8 @@ export default function authentication(state = initialState, action) {
         case userConstants.LOGIN_SUCCESS:
             return {
                 ...initialState,
-                access: action.access_token,
-                refresh: action.refresh_token
+                access: action.data.access_token,
+                refresh: action.data.refresh_token
             };
 
         case userConstants.LOGIN_FAILURE:
@@ -34,7 +34,7 @@ export default function authentication(state = initialState, action) {
             return { ...state, freshTokenPromise: action.freshTokenPromise };
 
         case authenticationConstants.JWT_REFRESH_SUCCESS:
-            return { ...state, access: action.access, freshTokenPromise: null };
+            return { ...state, access: action.data.access, freshTokenPromise: null };
 
         default:
             return state;
