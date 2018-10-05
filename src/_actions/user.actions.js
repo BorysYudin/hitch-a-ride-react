@@ -32,36 +32,37 @@ function logout() {
     return { type: userConstants.LOGOUT };
 }
 
-function getCurrentUser() {
+function register(data) {
     function request() {
-        return { type: userConstants.GET_CURRENT_REQUEST };
+        // return { type: userConstants.LOGIN_REQUEST };
     }
 
     function success(payload) {
-        return { type: userConstants.GET_CURRENT_SUCCESS, payload };
+        // return { type: userConstants.LOGIN_SUCCESS, ...payload };
     }
 
     function failure(error) {
-        return { type: userConstants.GET_CURRENT_FAILURE, error };
+        // return { type: userConstants.LOGIN_FAILURE, error };
     }
 
     return dispatch => {
-        dispatch(request());
+        // dispatch(request());
 
-        return userService.getCurrentUser().then(
+        return userService.register(data).then(
             payload => {
-                dispatch(success(payload));
-                return payload;
+                // dispatch(success(payload));
+                // history.push("/");
             },
             error => dispatch(failure(error))
         );
     };
 }
 
+
 const userActions = {
     login,
     logout,
-    getCurrentUser
+    register
 };
 
 export default userActions;

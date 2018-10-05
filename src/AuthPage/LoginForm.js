@@ -101,8 +101,9 @@ function Transition(props) {
 }
 
 class LoginForm extends React.Component {
+
     render() {
-        const {email, password, handleClose, classes, open, handleChange} = this.props;
+        const {email, password, handleClose, classes, open, handleChange, handleLogin } = this.props;
 
         return (
             <Dialog
@@ -151,7 +152,7 @@ class LoginForm extends React.Component {
                     </FormControl>
                 </DialogContent>
                 <DialogActions className={classes.dialogActions}>
-                    <Button onClick={handleClose} variant="contained" className={classes.button}>
+                    <Button onClick={handleLogin} variant="contained" className={classes.button}>
                         Submit
                     </Button>
                 </DialogActions>

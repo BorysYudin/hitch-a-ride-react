@@ -95,7 +95,10 @@ const styles = {
     cancelButton: {
         color: "#fff",
         padding: 0
-    }
+    },
+    tabs: {
+        justifyContent: "center"
+    },
 };
 
 function Transition(props) {
@@ -105,8 +108,7 @@ function Transition(props) {
 class LoginForm extends React.Component {
     render() {
         const {
-            email, password, handleClose, classes, open,
-            handleChange, tab, handleTabChange, firstName, lastName, vehicleName, vehicleId
+            handleClose, classes, open, handleChange, tab, handleTabChange, hitchhiker, driver, handleRegister
         } = this.props;
 
         return (
@@ -125,9 +127,14 @@ class LoginForm extends React.Component {
                     </IconButton>
                 </DialogTitle>
                 <DialogContent className={classes.dialogContent}>
-                    <Tabs value={tab} onChange={handleTabChange}>
-                        <Tab label="Hitchhiker"/>
-                        <Tab label="Driver"/>
+                    <Tabs
+                        value={tab}
+                        onChange={handleTabChange}
+                        classes={{flexContainer: classes.tabs}}
+                        TabIndicatorProps={{hidden:'hidden'}}
+                    >
+                        <Tab label="Hitchhiker" disableRipple/>
+                        <Tab label="Driver" disableRipple/>
                     </Tabs>
                     {tab === 0 &&
                     <React.Fragment>
@@ -137,8 +144,8 @@ class LoginForm extends React.Component {
                             </InputLabel>
                             <InputBase
                                 id="firstName"
-                                value={firstName}
-                                onChange={handleChange('register')('firstName')}
+                                value={hitchhiker.firstName}
+                                onChange={handleChange('hitchhiker')('firstName')}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -151,8 +158,8 @@ class LoginForm extends React.Component {
                             </InputLabel>
                             <InputBase
                                 id="lastName"
-                                value={lastName}
-                                onChange={handleChange('register')('lastName')}
+                                value={hitchhiker.lastName}
+                                onChange={handleChange('hitchhiker')('lastName')}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -160,13 +167,13 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="email" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="email_hitchhiker" className={classes.formLabel}>
                                 Email
                             </InputLabel>
                             <InputBase
-                                id="email"
-                                value={email}
-                                onChange={handleChange('register')('email')}
+                                id="email1"
+                                value={hitchhiker.email_hitchhiker}
+                                onChange={handleChange('hitchhiker')('email_hitchhiker')}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -174,13 +181,13 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="password" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="password_hitchhiker" className={classes.formLabel}>
                                 Password
                             </InputLabel>
                             <InputBase
-                                id="password"
-                                value={password}
-                                onChange={handleChange('register')('password')}
+                                id="password1"
+                                value={hitchhiker.password_hitchhiker}
+                                onChange={handleChange('hitchhiker')('password_hitchhiker')}
                                 type="password"
                                 classes={{
                                     root: classes.inputRoot,
@@ -197,8 +204,8 @@ class LoginForm extends React.Component {
                             </InputLabel>
                             <InputBase
                                 id="firstName"
-                                value={firstName}
-                                onChange={handleChange('register')('firstName')}
+                                value={driver.firstName}
+                                onChange={handleChange('driver')('firstName')}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -211,8 +218,8 @@ class LoginForm extends React.Component {
                             </InputLabel>
                             <InputBase
                                 id="lastName"
-                                value={lastName}
-                                onChange={handleChange('register')('lastName')}
+                                value={driver.lastName}
+                                onChange={handleChange('driver')('lastName')}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -220,13 +227,13 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="email" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="email_driver" className={classes.formLabel}>
                                 Email
                             </InputLabel>
                             <InputBase
-                                id="email"
-                                value={email}
-                                onChange={handleChange('register')('email')}
+                                id="email_driver"
+                                value={driver.email_driver}
+                                onChange={handleChange('driver')('email_driver')}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -234,13 +241,13 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="password" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="password_driver" className={classes.formLabel}>
                                 Password
                             </InputLabel>
                             <InputBase
-                                id="password"
-                                value={password}
-                                onChange={handleChange('register')('password')}
+                                id="password_driver"
+                                value={driver.password_driver}
+                                onChange={handleChange('driver')('password_driver')}
                                 type="password"
                                 classes={{
                                     root: classes.inputRoot,
@@ -254,8 +261,8 @@ class LoginForm extends React.Component {
                             </InputLabel>
                             <InputBase
                                 id="vehicleName"
-                                value={vehicleName}
-                                onChange={handleChange('register')('vehicleName')}
+                                value={driver.vehicleName}
+                                onChange={handleChange('driver')('vehicleName')}
                                 type="text"
                                 classes={{
                                     root: classes.inputRoot,
@@ -269,8 +276,8 @@ class LoginForm extends React.Component {
                             </InputLabel>
                             <InputBase
                                 id="vehicleId"
-                                value={vehicleId}
-                                onChange={handleChange('register')('vehicleId')}
+                                value={driver.vehicleId}
+                                onChange={handleChange('driver')('vehicleId')}
                                 type="text"
                                 classes={{
                                     root: classes.inputRoot,
@@ -281,7 +288,7 @@ class LoginForm extends React.Component {
                     </React.Fragment>}
                 </DialogContent>
                 <DialogActions className={classes.dialogActions}>
-                    <Button onClick={handleClose} variant="contained" className={classes.button}>
+                    <Button onClick={handleRegister} variant="contained" className={classes.button}>
                         Submit
                     </Button>
                 </DialogActions>

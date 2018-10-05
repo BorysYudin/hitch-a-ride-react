@@ -7,8 +7,8 @@ import AuthPage from "../AuthPage/AuthPage";
 
 const App = ({ location }) => (
     <div className="container">
-        <Route location={location} exact path="/map" component={HomePage} />
-        <Route location={location} exact path="/" component={AuthPage} />
+        <Route location={location} exact path="/" component={HomePage} />
+        <Route location={location} exact path="/auth" component={AuthPage} />
     </div>
 );
 

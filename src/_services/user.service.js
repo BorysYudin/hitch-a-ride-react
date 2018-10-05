@@ -7,15 +7,15 @@ const handleResponse = response =>
         ? response.data
         : Promise.reject(response.statusText);
 
-const login = (username, password) =>
-    axios.post("/api/token/", { username, password }).then(handleResponse);
+const login = (email, password) =>
+    axios.post("/auth/login", { email, password }).then(handleResponse);
 
-const getCurrentUser = () =>
-    axios.get("/api/users/me/", { headers: authHeader() }).then(handleResponse);
+const register = data =>
+    axios.post("/auth/register", data).then(handleResponse);
 
 const userService = {
     login,
-    getCurrentUser
+    register
 };
 
 export default userService;

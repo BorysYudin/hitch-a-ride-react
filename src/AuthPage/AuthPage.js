@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+
 import {withStyles} from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -8,6 +10,8 @@ import Typography from '@material-ui/core/Typography';
 
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
+
+import userActions from "../_actions/user.actions";
 
 const styles = {
     page: {
@@ -48,7 +52,34 @@ class AuthPage extends React.Component {
         login: {
             email: "",
             password: ""
+        },
+        hitchhiker: {
+            firstName: "",
+            lastName: "",
+            email_hitchhiker: "",
+            password_hitchhiker: ""
+        },
+        driver: {
+            firstName: "",
+            lastName: "",
+            email_driver: "",
+            password_driver: "",
+            vehicleName: "",
+            vehicleId: ""
         }
+    };
+
+    handleLogin = () => {
+        const { login: {email, password} } = this.state;
+        this.props.login(email, password);
+    };
+
+    handleRegister = () => {
+        const {hitchhiker, driver, tab} = this.state;
+        if(tab === 0)
+            this.props.register(hitchhiker);
+        else
+            this.props.register(driver);
     };
 
     handleOpen = name => () => {
@@ -75,7 +106,7 @@ class AuthPage extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {login, loginDialog, registerDialog, tab } = this.state;
+        const {login, loginDialog, registerDialog, tab, hitchhiker, driver } = this.state;
         console.log(classes.button);
 
         return (
@@ -108,15 +139,17 @@ class AuthPage extends React.Component {
                     handleClose={this.handleClose('loginDialog')}
                     handleChange={this.handleChange}
                     open={loginDialog}
+                    handleLogin={this.handleLogin}
                 />
                 <RegisterForm
-                    email={login.email}
-                    password={login.password}
                     handleClose={this.handleClose('registerDialog')}
                     handleChange={this.handleChange}
                     handleTabChange={this.handleTabChange}
                     tab={tab}
                     open={registerDialog}
+                    hitchhiker={hitchhiker}
+                    driver={driver}
+                    handleRegister={this.handleRegister}
                 />
             </div>
         );
@@ -127,4 +160,4 @@ AuthPage.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(AuthPage);
+export default withStyles(styles)(connect(null, {login: userActions.login, register: userActions.register})(AuthPage));
