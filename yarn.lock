@@ -6782,7 +6782,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
+prop-types@^15.5.0, prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
   integrity sha512-3pboPvLiWD7dkI3qf3KbUe6hKFKa52w+AE0VCqECtf+QHAKgOL37tTaNCnuX1nAAQ4ZhyP+kYVKf8rLmJ/feDQ==
@@ -6980,6 +6980,13 @@ react-event-listener@^0.6.2:
     "@babel/runtime" "7.0.0"
     prop-types "^15.6.0"
     warning "^4.0.1"
+
+react-google-autocomplete@^1.0.16:
+  version "1.0.16"
+  resolved "https://registry.yarnpkg.com/react-google-autocomplete/-/react-google-autocomplete-1.0.16.tgz#30d35b7fb8556160bdceec93ec70c2546eccbd24"
+  integrity sha512-QHQlNLPgh9sBM2LDrg9myYcektYNwg+2xnuFj3V2Bb6kGV0JO9KLOa8bZgjJL/3bKm6SxMUcUv0+pL8OC3wEEw==
+  dependencies:
+    prop-types "^15.5.0"
 
 react-jss@^8.1.0:
   version "8.6.1"
