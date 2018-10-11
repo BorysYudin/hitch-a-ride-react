@@ -3,7 +3,7 @@ import React from "react";
 import {withStyles} from '@material-ui/core/styles';
 
 import Autocomplete from 'react-google-autocomplete';
-import {withScriptjs, withGoogleMap, GoogleMap, Marker} from "react-google-maps";
+import {withScriptjs, withGoogleMap, GoogleMap, Marker, DirectionsRenderer} from "react-google-maps";
 
 
 const styles = {
@@ -28,15 +28,63 @@ const styles = {
     }
 };
 
-const MyMapComponent = withScriptjs(withGoogleMap(({ from, to }) =>
-    <GoogleMap
-        defaultZoom={10}
-        defaultCenter={{lat: 49.83826, lng: 24.02324}}
-    >
-        {from && <Marker position={{lat: from.geometry.location.lat(), lng: from.geometry.location.lng()}}/>}
-        {to && <Marker position={{lat: to.geometry.location.lat(), lng: to.geometry.location.lng()}}/>}
-    </GoogleMap>
-));
+class MapComponent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            directions: null
+        };
+
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const {from, to, } = this.props;
+
+        const DirectionsService = new window.google.maps.DirectionsService();
+
+        if (from && to && (from !== prevProps.from || to !== prevProps.to)) {
+            DirectionsService.route({
+                origin: new window.google.maps.LatLng(from.geometry.location.lat(), from.geometry.location.lng()),
+                destination: new window.google.maps.LatLng(to.geometry.location.lat(), to.geometry.location.lng()),
+                travelMode: window.google.maps.TravelMode.DRIVING,
+                provideRouteAlternatives: true
+            }, (result, status) => {
+                if (status === window.google.maps.DirectionsStatus.OK)
+                    this.setState({directions: result});
+                else
+                    this.setState({directions: null});
+            });
+            this.setState({directions: null});
+        }
+    }
+
+    render() {
+        const {from, to} = this.props;
+        const {directions} = this.state;
+
+        let directionsArray = null;
+        if (directions) {
+            directionsArray = [];
+            for (var i = 0; i < directions.routes.length; i++)
+                directionsArray.push(<DirectionsRenderer key={i} directions={directions} routeIndex={i}/>);
+        }
+
+        console.log(directions);
+
+        return (
+            <GoogleMap
+                defaultZoom={10}
+                defaultCenter={{lat: 49.83826, lng: 24.02324}}
+            >
+                {from && <Marker position={{lat: from.geometry.location.lat(), lng: from.geometry.location.lng()}}/>}
+                {to && <Marker position={{lat: to.geometry.location.lat(), lng: to.geometry.location.lng()}}/>}
+                {directionsArray}
+            </GoogleMap>
+        )
+    }
+}
+
+MapComponent = withScriptjs(withGoogleMap(MapComponent));
 
 class HomePage extends React.Component {
     state = {
@@ -52,7 +100,7 @@ class HomePage extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const { from, to } = this.state;
+        const {from, to} = this.state;
 
         return (
             <div>
@@ -70,7 +118,7 @@ class HomePage extends React.Component {
                     types={['address']}
                     componentRestrictions={{country: "ua"}}
                 />
-                <MyMapComponent
+                <MapComponent
                     googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk&v=3.exp&libraries=geometry,drawing,places"
                     loadingElement={<div style={{height: `100%`}}/>}
                     containerElement={<div style={{height: `400px`}}/>}
