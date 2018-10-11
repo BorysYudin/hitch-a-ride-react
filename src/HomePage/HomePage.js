@@ -4,15 +4,24 @@ import {withStyles} from '@material-ui/core/styles';
 
 import Autocomplete from 'react-google-autocomplete';
 import {withScriptjs, withGoogleMap, GoogleMap, Marker, DirectionsRenderer} from "react-google-maps";
+import CardContent from "@material-ui/core/CardContent/CardContent";
+import Card from "@material-ui/core/Card/Card";
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
 
 
 const styles = {
+    inputLabel: {
+        fontSize: 18,
+    },
     input: {
         borderRadius: 4,
         backgroundColor: "#fff",
         border: '1px solid #ced4da',
         fontSize: 16,
         padding: '8px 12px',
+        maxWidth: 500,
+        margin: "24px 0 12px",
         fontFamily: [
             '-apple-system',
             'BlinkMacSystemFont',
@@ -24,7 +33,22 @@ const styles = {
             '"Apple Color Emoji"',
             '"Segoe UI Emoji"',
             '"Segoe UI Symbol"',
-        ].join(','),
+        ].join(',')
+    },
+    mapCard: {
+        maxWidth: 1500,
+        margin: "24px auto"
+    },
+    contentColumns: {
+        display: "flex"
+    },
+    leftColumn: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column"
+    },
+    rightColumn: {
+        width: "100%"
     }
 };
 
@@ -38,7 +62,7 @@ class MapComponent extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        const {from, to, } = this.props;
+        const {from, to,} = this.props;
 
         const DirectionsService = new window.google.maps.DirectionsService();
 
@@ -103,29 +127,51 @@ class HomePage extends React.Component {
         const {from, to} = this.state;
 
         return (
-            <div>
-                <Autocomplete
-                    placeholder="From"
-                    className={classes.input}
-                    onPlaceSelected={this.handleInput("from")}
-                    types={['address']}
-                    componentRestrictions={{country: "ua"}}
-                />
-                <Autocomplete
-                    placeholder="To"
-                    className={classes.input}
-                    onPlaceSelected={this.handleInput("to")}
-                    types={['address']}
-                    componentRestrictions={{country: "ua"}}
-                />
-                <MapComponent
-                    googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk&v=3.exp&libraries=geometry,drawing,places"
-                    loadingElement={<div style={{height: `100%`}}/>}
-                    containerElement={<div style={{height: `400px`}}/>}
-                    mapElement={<div style={{height: `100%`}}/>}
-                    from={from}
-                    to={to}
-                />
+            <div className={classes.root}>
+                <Card className={classes.mapCard}>
+                    <MapComponent
+                        googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk&v=3.exp&libraries=geometry,drawing,places"
+                        loadingElement={<div style={{height: `100%`}}/>}
+                        containerElement={<div style={{height: `500px`}}/>}
+                        mapElement={<div style={{height: `100%`}}/>}
+                        from={from}
+                        to={to}
+                    />
+                    <CardContent className={classes.contentColumns}>
+                        <div className={classes.leftColumn}>
+                            <FormControl className={classes.margin}>
+                                <InputLabel shrink htmlFor="from-point" className={classes.inputLabel}>
+                                    From
+                                </InputLabel>
+                                <Autocomplete
+                                    id="from-point"
+                                    placeholder=""
+                                    className={classes.input}
+                                    onPlaceSelected={this.handleInput("from")}
+                                    types={['address']}
+                                    componentRestrictions={{country: "ua"}}
+                                />
+                            </FormControl>
+
+                            <FormControl className={classes.margin}>
+                                <InputLabel shrink htmlFor="to-point" className={classes.inputLabel}>
+                                    To
+                                </InputLabel>
+                                <Autocomplete
+                                    id="to-point"
+                                    placeholder=""
+                                    className={classes.input}
+                                    onPlaceSelected={this.handleInput("to")}
+                                    types={['address']}
+                                    componentRestrictions={{country: "ua"}}
+                                />
+                            </FormControl>
+
+                        </div>
+                        <div className={classes.rightColumn}>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         )
     }
