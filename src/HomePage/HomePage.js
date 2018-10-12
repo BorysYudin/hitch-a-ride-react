@@ -8,6 +8,7 @@ import CardContent from "@material-ui/core/CardContent/CardContent";
 import Card from "@material-ui/core/Card/Card";
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import CardMedia from '@material-ui/core/CardMedia';
 
 
 const styles = {
@@ -48,50 +49,39 @@ const styles = {
         flexDirection: "column"
     },
     rightColumn: {
-        width: "100%"
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center"
+    },
+    routeCard: {
+        margin: "12px 0",
+        maxWidth: 800,
+        width: "100%",
+        display: 'flex',
+    },
+    routeMap: {
+        width: "100%",
+
+    },
+    routeCardDetails: {
+        minWidth: 300
     }
 };
 
 class MapComponent extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            directions: null
-        };
-
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        const {from, to,} = this.props;
-
-        const DirectionsService = new window.google.maps.DirectionsService();
-
-        if (from && to && (from !== prevProps.from || to !== prevProps.to)) {
-            DirectionsService.route({
-                origin: new window.google.maps.LatLng(from.geometry.location.lat(), from.geometry.location.lng()),
-                destination: new window.google.maps.LatLng(to.geometry.location.lat(), to.geometry.location.lng()),
-                travelMode: window.google.maps.TravelMode.DRIVING,
-                provideRouteAlternatives: true
-            }, (result, status) => {
-                if (status === window.google.maps.DirectionsStatus.OK)
-                    this.setState({directions: result});
-                else
-                    this.setState({directions: null});
-            });
-            this.setState({directions: null});
-        }
-    }
-
     render() {
-        const {from, to} = this.props;
-        const {directions} = this.state;
+        const {from, to, directions, directionsIndex} = this.props;
 
-        let directionsArray = null;
-        if (directions) {
-            directionsArray = [];
+        let directionsArray = [];
+        if (directions && directionsIndex) {
+            console.log(directions,);
+            directionsArray.push(<DirectionsRenderer directions={directions} routeIndex={directionsIndex}/>);
+        }
+        else if (directions)
             for (var i = 0; i < directions.routes.length; i++)
                 directionsArray.push(<DirectionsRenderer key={i} directions={directions} routeIndex={i}/>);
-        }
+
 
         console.log(directions);
 
@@ -113,7 +103,8 @@ MapComponent = withScriptjs(withGoogleMap(MapComponent));
 class HomePage extends React.Component {
     state = {
         from: null,
-        to: null
+        to: null,
+        directions: null
     };
 
     handleInput = position => place => {
@@ -122,9 +113,32 @@ class HomePage extends React.Component {
         });
     };
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const {from, to,} = this.state;
+
+        const DirectionsService = new window.google.maps.DirectionsService();
+
+        if (from && to && (from !== prevState.from || to !== prevState.to)) {
+            DirectionsService.route({
+                origin: new window.google.maps.LatLng(from.geometry.location.lat(), from.geometry.location.lng()),
+                destination: new window.google.maps.LatLng(to.geometry.location.lat(), to.geometry.location.lng()),
+                travelMode: window.google.maps.TravelMode.DRIVING,
+                provideRouteAlternatives: true
+            }, (result, status) => {
+                if (status === window.google.maps.DirectionsStatus.OK)
+                    this.setState({directions: result});
+                else
+                    this.setState({directions: null});
+            });
+            this.setState({directions: null});
+        }
+    }
+
     render() {
         const {classes} = this.props;
-        const {from, to} = this.state;
+        const {from, to, directions} = this.state;
+
+        const routes = ['First route', 'Second route'];
 
         return (
             <div className={classes.root}>
@@ -136,6 +150,7 @@ class HomePage extends React.Component {
                         mapElement={<div style={{height: `100%`}}/>}
                         from={from}
                         to={to}
+                        directions={directions}
                     />
                     <CardContent className={classes.contentColumns}>
                         <div className={classes.leftColumn}>
@@ -169,6 +184,29 @@ class HomePage extends React.Component {
 
                         </div>
                         <div className={classes.rightColumn}>
+                            {
+                                directions && directions.routes.map((route, index) => (
+                                    <Card className={classes.routeCard}>
+                                        <div className={classes.routeCardDetails}>
+                                            <CardContent>
+                                                {route.summary}
+                                            </CardContent>
+                                        </div>
+                                        <div className={classes.routeMap}>
+                                            <MapComponent
+                                                googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk&v=3.exp&libraries=geometry,drawing,places"
+                                                loadingElement={<div style={{height: `100%`}}/>}
+                                                containerElement={<div style={{height: `300px`}}/>}
+                                                mapElement={<div style={{height: `100%`}}/>}
+                                                from={from}
+                                                to={to}
+                                                directions={directions}
+                                                directionsIndex={index}
+                                            />
+                                        </div>
+                                    </Card>
+                                ))
+                            }
                         </div>
                     </CardContent>
                 </Card>
