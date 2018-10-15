@@ -74,7 +74,7 @@ function logout(refreshToken) {
     return dispatch => {
         dispatch(request());
 
-        return userService.login(refreshToken).then(
+        return userService.logout(refreshToken).then(
             () => {
                 dispatch(success());
                 history.push("/auth");

@@ -1,0 +1,7 @@
+const mapConstants = {
+    SELECT_ROUTE_REQUEST: "SELECT_ROUTE_REQUEST",
+    SELECT_ROUTE_SUCCESS: "SELECT_ROUTE_SUCCESS",
+    SELECT_ROUTE_FAILURE: "SELECT_ROUTE_FAILURE"
+};
+
+export default mapConstants;

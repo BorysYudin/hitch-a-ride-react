@@ -1,14 +1,19 @@
 import React from "react";
+import {connect} from 'react-redux';
 
 import {withStyles} from '@material-ui/core/styles';
 
 import Autocomplete from 'react-google-autocomplete';
 import {withScriptjs, withGoogleMap, GoogleMap, Marker, DirectionsRenderer} from "react-google-maps";
+import Grid from '@material-ui/core/Grid';
 import CardContent from "@material-ui/core/CardContent/CardContent";
 import Card from "@material-ui/core/Card/Card";
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-import CardMedia from '@material-ui/core/CardMedia';
+import Typography from '@material-ui/core/Typography';
+
+import Header from '../_components/general/Header';
+import mapActions from '../_actions/map.actions';
 
 
 const styles = {
@@ -21,7 +26,6 @@ const styles = {
         border: '1px solid #ced4da',
         fontSize: 16,
         padding: '8px 12px',
-        maxWidth: 500,
         margin: "24px 0 12px",
         fontFamily: [
             '-apple-system',
@@ -38,7 +42,7 @@ const styles = {
     },
     mapCard: {
         maxWidth: 1500,
-        margin: "24px auto"
+        width: "100%"
     },
     contentColumns: {
         display: "flex"
@@ -66,6 +70,23 @@ const styles = {
     },
     routeCardDetails: {
         minWidth: 300
+    },
+    inputCard: {
+        margin: "24px auto"
+    },
+    formControl: {
+        width: "100%"
+    },
+    root: {
+        maxWidth: 1600,
+        margin: "0 auto",
+        padding: "24px"
+    },
+    alternativeCard: {
+        "&:hover": {
+            cursor: "pointer",
+            background: "rgba(0, 0, 0, .05)",
+        }
     }
 };
 
@@ -75,15 +96,11 @@ class MapComponent extends React.Component {
 
         let directionsArray = [];
         if (directions && directionsIndex) {
-            console.log(directions,);
             directionsArray.push(<DirectionsRenderer directions={directions} routeIndex={directionsIndex}/>);
         }
         else if (directions)
             for (var i = 0; i < directions.routes.length; i++)
                 directionsArray.push(<DirectionsRenderer key={i} directions={directions} routeIndex={i}/>);
-
-
-        console.log(directions);
 
         return (
             <GoogleMap
@@ -105,6 +122,11 @@ class HomePage extends React.Component {
         from: null,
         to: null,
         directions: null
+    };
+
+    selectRoute = routeIndex => () => {
+        const {directions} = this.state;
+        this.props.selectRoute({directions, route_index: routeIndex});
     };
 
     handleInput = position => place => {
@@ -138,81 +160,94 @@ class HomePage extends React.Component {
         const {classes} = this.props;
         const {from, to, directions} = this.state;
 
-        const routes = ['First route', 'Second route'];
-
         return (
-            <div className={classes.root}>
-                <Card className={classes.mapCard}>
-                    <MapComponent
-                        googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk&v=3.exp&libraries=geometry,drawing,places"
-                        loadingElement={<div style={{height: `100%`}}/>}
-                        containerElement={<div style={{height: `500px`}}/>}
-                        mapElement={<div style={{height: `100%`}}/>}
-                        from={from}
-                        to={to}
-                        directions={directions}
-                    />
-                    <CardContent className={classes.contentColumns}>
-                        <div className={classes.leftColumn}>
-                            <FormControl className={classes.margin}>
-                                <InputLabel shrink htmlFor="from-point" className={classes.inputLabel}>
-                                    From
-                                </InputLabel>
-                                <Autocomplete
-                                    id="from-point"
-                                    placeholder=""
-                                    className={classes.input}
-                                    onPlaceSelected={this.handleInput("from")}
-                                    types={['address']}
-                                    componentRestrictions={{country: "ua"}}
-                                />
-                            </FormControl>
+            <div>
+                <Header></Header>
+                <Grid container className={classes.root}>
+                    <Grid item xs={4} container>
+                        <Grid item xs={11}>
+                            <Typography variant="headline" gutterBottom>
+                                Your trip
+                            </Typography>
+                            <Card>
+                                <CardContent>
+                                    <Grid container>
+                                        <Grid item xs={12}>
+                                            <FormControl className={classes.formControl}>
+                                                <InputLabel shrink htmlFor="from-point" className={classes.inputLabel}>
+                                                    From
+                                                </InputLabel>
+                                                <Autocomplete
+                                                    id="from-point"
+                                                    placeholder=""
+                                                    className={classes.input}
+                                                    onPlaceSelected={this.handleInput("from")}
+                                                    types={['address']}
+                                                    componentRestrictions={{country: "ua"}}
+                                                />
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <FormControl className={classes.formControl}>
+                                                <InputLabel shrink htmlFor="to-point" className={classes.inputLabel}>
+                                                    To
+                                                </InputLabel>
+                                                <Autocomplete
+                                                    id="to-point"
+                                                    placeholder=""
+                                                    className={classes.input}
+                                                    onPlaceSelected={this.handleInput("to")}
+                                                    types={['address']}
+                                                    componentRestrictions={{country: "ua"}}
+                                                />
+                                            </FormControl>
+                                        </Grid>
+                                    </Grid>
+                                </CardContent>
+                            </Card>
+                        </Grid>
 
-                            <FormControl className={classes.margin}>
-                                <InputLabel shrink htmlFor="to-point" className={classes.inputLabel}>
-                                    To
-                                </InputLabel>
-                                <Autocomplete
-                                    id="to-point"
-                                    placeholder=""
-                                    className={classes.input}
-                                    onPlaceSelected={this.handleInput("to")}
-                                    types={['address']}
-                                    componentRestrictions={{country: "ua"}}
-                                />
-                            </FormControl>
-
-                        </div>
-                        <div className={classes.rightColumn}>
+                        <Grid item xs={11} container direction="column" spacing={16}>
                             {
-                                directions && directions.routes.map((route, index) => (
-                                    <Card className={classes.routeCard}>
-                                        <div className={classes.routeCardDetails}>
-                                            <CardContent>
-                                                {route.summary}
-                                            </CardContent>
-                                        </div>
-                                        <div className={classes.routeMap}>
-                                            <MapComponent
-                                                googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk&v=3.exp&libraries=geometry,drawing,places"
-                                                loadingElement={<div style={{height: `100%`}}/>}
-                                                containerElement={<div style={{height: `300px`}}/>}
-                                                mapElement={<div style={{height: `100%`}}/>}
-                                                from={from}
-                                                to={to}
-                                                directions={directions}
-                                                directionsIndex={index}
-                                            />
-                                        </div>
-                                    </Card>
-                                ))
+                                directions && (
+                                    <React.Fragment>
+                                        <Typography variant="headline">
+                                            Alternative routes
+                                        </Typography>
+                                        {
+                                            directions.routes.map((route, index) => (
+                                                <Grid item>
+                                                    <Card key={index}
+                                                          className={classes.alternativeCard}
+                                                          onClick={this.selectRoute(index)}
+                                                    >
+                                                        <CardContent>{route.summary}</CardContent>
+                                                    </Card>
+                                                </Grid>
+                                            ))
+                                        }
+                                    </React.Fragment>
+                                )
                             }
-                        </div>
-                    </CardContent>
-                </Card>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={8}>
+                        <Card className={classes.mapCard}>
+                            <MapComponent
+                                googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk&v=3.exp&libraries=geometry,drawing,places"
+                                loadingElement={<div style={{height: `100%`}}/>}
+                                containerElement={<div style={{height: `700px`}}/>}
+                                mapElement={<div style={{height: `100%`}}/>}
+                                from={from}
+                                to={to}
+                                directions={directions}
+                            />
+                        </Card>
+                    </Grid>
+                </Grid>
             </div>
         )
     }
 }
 
-export default withStyles(styles)(HomePage);
+export default connect(null, {selectRoute: mapActions.selectRoute})(withStyles(styles)(HomePage));
