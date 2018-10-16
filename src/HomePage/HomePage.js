@@ -275,9 +275,11 @@ class HomePage extends React.Component {
                                                         value={time}
                                                         onChange={e => this.handleChange('time')(e.target.value)}
                                                         className={classes.input}
-                                                        InputProps={{disableUnderline: true}}
+                                                        InputProps={{
+                                                            disableUnderline: true
+                                                        }}
                                                         inputProps={{
-                                                            step: 300, // 5 min
+                                                            step: 300 // 5 min
                                                         }}
                                                     />
                                                 </FormControl>

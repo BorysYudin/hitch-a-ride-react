@@ -1,4 +1,3 @@
-import userConstants from "../_constants/user.constants";
 import mapConstants from "../_constants/map.constants";
 import mapService from "../_services/map.service";
 

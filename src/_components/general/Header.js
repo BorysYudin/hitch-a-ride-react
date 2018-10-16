@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
 import {withStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -13,7 +13,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 
 import userActions from '../../_actions/user.actions';
-import authentication from "../../_reducers/authentication.reducer";
+import history from '../../_helpers/history';
 
 const styles = {
     root: {
@@ -24,6 +24,11 @@ const styles = {
     },
     grow: {
         flexGrow: 1,
+    },
+    dropDownButton: {
+        "&:hover": {
+            cursor: "pointer"
+        }
     }
 };
 
@@ -42,13 +47,13 @@ class Header extends React.Component {
     };
 
     handleLogout = () => {
-        const { refreshToken } = this.props;
+        const {refreshToken} = this.props;
 
         this.props.logout(refreshToken);
     };
 
     render() {
-        const {classes} = this.props;
+        const {classes, user} = this.props;
         const {auth, anchorEl} = this.state;
         const open = Boolean(anchorEl);
 
@@ -61,14 +66,16 @@ class Header extends React.Component {
                         </Typography>
                         {auth && (
                             <div>
-                                <IconButton
-                                    aria-owns={open ? 'menu-appbar' : null}
-                                    aria-haspopup="true"
-                                    onClick={this.handleMenu}
-                                    color="inherit"
-                                >
-                                    <AccountCircle/>
-                                </IconButton>
+                                <div onClick={this.handleMenu} className={classes.dropDownButton}>
+                                    {user.email}
+                                    <IconButton
+                                        aria-owns={open ? 'menu-appbar' : null}
+                                        aria-haspopup="true"
+                                        color="inherit"
+                                    >
+                                        <AccountCircle/>
+                                    </IconButton>
+                                </div>
                                 <Menu
                                     id="menu-appbar"
                                     anchorEl={anchorEl}
@@ -83,8 +90,9 @@ class Header extends React.Component {
                                     open={open}
                                     onClose={this.handleClose}
                                 >
-                                    <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                                    <MenuItem onClick={this.handleClose}>My account</MenuItem>
+                                    <MenuItem onClick={() => history.push('/')}>Profile</MenuItem>
+                                    <MenuItem onClick={() => history.push('/trips/add')}>Add trip</MenuItem>
+                                    <MenuItem onClick={this.handleClose}>Settings</MenuItem>
                                     <MenuItem onClick={this.handleLogout}>Logout</MenuItem>
                                 </Menu>
                             </div>
@@ -101,7 +109,8 @@ Header.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    refreshToken: state.authentication.refresh
+    refreshToken: state.authentication.refresh,
+    user: state.user
 });
 
 
