@@ -5,7 +5,7 @@ import {withStyles} from '@material-ui/core/styles';
 import moment from 'moment';
 
 import Autocomplete from 'react-google-autocomplete';
-import {withScriptjs, withGoogleMap, GoogleMap, Marker, DirectionsRenderer} from "react-google-maps";
+import {withGoogleMap, GoogleMap, Marker, DirectionsRenderer, Polyline} from "react-google-maps";
 import Grid from '@material-ui/core/Grid';
 import CardContent from "@material-ui/core/CardContent/CardContent";
 import Card from "@material-ui/core/Card/Card";
@@ -94,7 +94,6 @@ const styles = {
     button: {
         color: "#fff",
         background: "#DF691A",
-        margin: "0 16px",
         "&:hover": {
             background: "#DF691A",
             opacity: 0.9
@@ -104,15 +103,34 @@ const styles = {
 
 class MapComponent extends React.Component {
     render() {
-        const {from, to, directions, directionsIndex} = this.props;
+        const {from, to, directions, selectedRoute} = this.props;
 
         let directionsArray = [];
-        if (directions && directionsIndex) {
-            directionsArray.push(<DirectionsRenderer directions={directions} routeIndex={directionsIndex}/>);
-        }
+        if (directions && selectedRoute !== null)
+            directionsArray.push(
+                <Polyline
+                    path={directions.routes[selectedRoute].overview_path}
+                    key="selected-route"
+                    geodesic={true}
+                    options={{
+                        strokeColor: "#01579B",
+                        strokeOpacity: 0.8,
+                        strokeWeight: 5,
+                        clickable: true
+                    }}
+                />
+            );
         else if (directions)
-            for (var i = 0; i < directions.routes.length; i++)
-                directionsArray.push(<DirectionsRenderer key={i} directions={directions} routeIndex={i} polylineOptions={{ strokeColor: "#8b0013" } }/>);
+            for (let i = 0; i < directions.routes.length; i++)
+                if (i !== selectedRoute)
+                    directionsArray.push(
+                        <DirectionsRenderer
+                            key={i}
+                            directions={directions}
+                            routeIndex={i}
+                        />
+                    );
+
 
         return (
             <GoogleMap
@@ -127,7 +145,7 @@ class MapComponent extends React.Component {
     }
 }
 
-MapComponent = withScriptjs(withGoogleMap(MapComponent));
+MapComponent = withGoogleMap(MapComponent);
 
 class HomePage extends React.Component {
     state = {
@@ -141,8 +159,16 @@ class HomePage extends React.Component {
 
     createTrip = () => {
         const {directions, date, time, selectedRoute} = this.state;
-        if(directions && date && time && selectedRoute !== null)
-            this.props.selectRoute({directions, date, time, route_index: selectedRoute});
+
+        if (directions && date && time && selectedRoute !== null) {
+            const route = {...directions, routes: [directions.routes[selectedRoute]]};
+            const data = {
+                route: JSON.stringify(route),
+                departure: moment(`${date} ${time}`, "YYYY-MM-DD HH:mm").valueOf() / 1000
+            };
+
+            this.props.createTrip(data);
+        }
     };
 
     handleInput = position => place => {
@@ -272,7 +298,7 @@ class HomePage extends React.Component {
                                             <Grid item key={index}>
                                                 <Card
                                                     className={classes.alternativeCard}
-                                                    style={{background: selectedRoute === index && "#80D8FF" }}
+                                                    style={{background: selectedRoute === index && "#80D8FF"}}
                                                     onClick={() => this.handleChange('selectedRoute')(index)}
                                                 >
                                                     <CardContent>{route.summary}</CardContent>
@@ -283,28 +309,27 @@ class HomePage extends React.Component {
                                 </Grid>
                             )}
                             <Grid item xs={11}>
-                                <Grid container direction="column">
-                                    <Button
-                                        variant="contained"
-                                        className={classes.button} disabled={!date || !time || selectedRoute === null}
-                                        onClick={this.createTrip}
-                                    >
-                                        Create Trip
-                                    </Button>
-                                </Grid>
+                                <Button
+                                    variant="contained"
+                                    className={classes.button}
+                                    disabled={!date || !time || selectedRoute === null}
+                                    onClick={this.createTrip}
+                                >
+                                    Create Trip
+                                </Button>
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={8}>
                         <Card className={classes.mapCard}>
                             <MapComponent
-                                googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk&v=3.exp&libraries=geometry,drawing,places"
                                 loadingElement={<div style={{height: `100%`}}/>}
                                 containerElement={<div style={{height: `700px`}}/>}
                                 mapElement={<div style={{height: `100%`}}/>}
                                 from={from}
                                 to={to}
                                 directions={directions}
+                                selectedRoute={selectedRoute}
                             />
                         </Card>
                     </Grid>
@@ -314,4 +339,4 @@ class HomePage extends React.Component {
     }
 }
 
-export default connect(null, {selectRoute: mapActions.selectRoute})(withStyles(styles)(HomePage));
+export default connect(null, {createTrip: mapActions.createTrip})(withStyles(styles)(HomePage));

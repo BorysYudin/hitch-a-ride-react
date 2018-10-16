@@ -3,15 +3,12 @@ import axios from "axios";
 import authHeader from "../_helpers/auth-header";
 import { handleResponse } from '../_helpers/utils';
 
-const selectRoute = data => {
-    // axios.post("/auth/login", { email, password }).then(handleResponse);
-
-    console.log(data);
-    return Promise.resolve();
-}
-
-const userService = {
-    selectRoute
+const createTrip = data => {
+    axios.post("/api/v1/trips", data, {headers: authHeader()}).then(handleResponse);
 };
 
-export default userService;
+const mapService = {
+    createTrip
+};
+
+export default mapService;

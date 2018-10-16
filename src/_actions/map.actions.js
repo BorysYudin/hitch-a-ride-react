@@ -3,7 +3,7 @@ import mapConstants from "../_constants/map.constants";
 import mapService from "../_services/map.service";
 
 
-function selectRoute(data) {
+function createTrip(data) {
     function request() {
         return { type: mapConstants.SELECT_ROUTE_REQUEST };
     }
@@ -19,7 +19,7 @@ function selectRoute(data) {
     return dispatch => {
         dispatch(request());
 
-        return mapService.selectRoute(data).then(
+        return mapService.createTrip(data).then(
             () => dispatch(success()),
             response => {
                 dispatch(failure(response));
@@ -29,8 +29,8 @@ function selectRoute(data) {
     };
 }
 
-const userActions = {
-    selectRoute
+const mapActions = {
+    createTrip
 };
 
-export default userActions;
+export default mapActions;
