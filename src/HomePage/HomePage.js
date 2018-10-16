@@ -2,6 +2,7 @@ import React from "react";
 import {connect} from 'react-redux';
 
 import {withStyles} from '@material-ui/core/styles';
+import moment from 'moment';
 
 import Autocomplete from 'react-google-autocomplete';
 import {withScriptjs, withGoogleMap, GoogleMap, Marker, DirectionsRenderer} from "react-google-maps";
@@ -11,9 +12,11 @@ import Card from "@material-ui/core/Card/Card";
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
 
 import Header from '../_components/general/Header';
 import mapActions from '../_actions/map.actions';
+import Button from "@material-ui/core/Button/Button";
 
 
 const styles = {
@@ -87,7 +90,16 @@ const styles = {
             cursor: "pointer",
             background: "rgba(0, 0, 0, .05)",
         }
-    }
+    },
+    button: {
+        color: "#fff",
+        background: "#DF691A",
+        margin: "0 16px",
+        "&:hover": {
+            background: "#DF691A",
+            opacity: 0.9
+        }
+    },
 };
 
 class MapComponent extends React.Component {
@@ -100,7 +112,7 @@ class MapComponent extends React.Component {
         }
         else if (directions)
             for (var i = 0; i < directions.routes.length; i++)
-                directionsArray.push(<DirectionsRenderer key={i} directions={directions} routeIndex={i}/>);
+                directionsArray.push(<DirectionsRenderer key={i} directions={directions} routeIndex={i} polylineOptions={{ strokeColor: "#8b0013" } }/>);
 
         return (
             <GoogleMap
@@ -121,12 +133,16 @@ class HomePage extends React.Component {
     state = {
         from: null,
         to: null,
+        date: moment().format('YYYY-MM-DD'),
+        time: moment().format('HH:mm'),
+        selectedRoute: null,
         directions: null
     };
 
-    selectRoute = routeIndex => () => {
-        const {directions} = this.state;
-        this.props.selectRoute({directions, route_index: routeIndex});
+    createTrip = () => {
+        const {directions, date, time, selectedRoute} = this.state;
+        if(directions && date && time && selectedRoute !== null)
+            this.props.selectRoute({directions, date, time, route_index: selectedRoute});
     };
 
     handleInput = position => place => {
@@ -134,6 +150,8 @@ class HomePage extends React.Component {
             [position]: place
         });
     };
+
+    handleChange = key => value => this.setState({[key]: value});
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         const {from, to,} = this.state;
@@ -158,77 +176,123 @@ class HomePage extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {from, to, directions} = this.state;
+        const {from, to, directions, date, time, selectedRoute} = this.state;
 
         return (
             <div>
-                <Header></Header>
+                <Header/>
                 <Grid container className={classes.root}>
-                    <Grid item xs={4} container>
-                        <Grid item xs={11}>
-                            <Typography variant="headline" gutterBottom>
-                                Your trip
-                            </Typography>
-                            <Card>
-                                <CardContent>
-                                    <Grid container>
-                                        <Grid item xs={12}>
-                                            <FormControl className={classes.formControl}>
-                                                <InputLabel shrink htmlFor="from-point" className={classes.inputLabel}>
-                                                    From
-                                                </InputLabel>
-                                                <Autocomplete
-                                                    id="from-point"
-                                                    placeholder=""
-                                                    className={classes.input}
-                                                    onPlaceSelected={this.handleInput("from")}
-                                                    types={['address']}
-                                                    componentRestrictions={{country: "ua"}}
-                                                />
-                                            </FormControl>
+                    <Grid item xs={4}>
+                        <Grid container spacing={32}>
+                            <Grid item xs={11}>
+                                <Typography variant="headline" gutterBottom>
+                                    Your trip
+                                </Typography>
+                                <Card>
+                                    <CardContent>
+                                        <Grid container>
+                                            <Grid item xs={12}>
+                                                <FormControl className={classes.formControl}>
+                                                    <InputLabel shrink htmlFor="from-point"
+                                                                className={classes.inputLabel}>
+                                                        From
+                                                    </InputLabel>
+                                                    <Autocomplete
+                                                        id="from-point"
+                                                        placeholder=""
+                                                        className={classes.input}
+                                                        onPlaceSelected={this.handleInput("from")}
+                                                        types={['address']}
+                                                        componentRestrictions={{country: "ua"}}
+                                                    />
+                                                </FormControl>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <FormControl className={classes.formControl}>
+                                                    <InputLabel shrink htmlFor="to-point"
+                                                                className={classes.inputLabel}>
+                                                        To
+                                                    </InputLabel>
+                                                    <Autocomplete
+                                                        id="to-point"
+                                                        placeholder=""
+                                                        className={classes.input}
+                                                        onPlaceSelected={this.handleInput("to")}
+                                                        types={['address']}
+                                                        componentRestrictions={{country: "ua"}}
+                                                    />
+                                                </FormControl>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <FormControl className={classes.formControl}>
+                                                    <InputLabel shrink htmlFor="date" className={classes.inputLabel}>
+                                                        Date
+                                                    </InputLabel>
+                                                    <TextField
+                                                        id="date"
+                                                        type="date"
+                                                        onChange={e => this.handleChange('date')(e.target.value)}
+                                                        value={date}
+                                                        className={classes.input}
+                                                        InputProps={{disableUnderline: true}}
+                                                    />
+                                                </FormControl>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <FormControl className={classes.formControl}>
+                                                    <InputLabel shrink htmlFor="time" className={classes.inputLabel}>
+                                                        Time
+                                                    </InputLabel>
+                                                    <TextField
+                                                        id="time"
+                                                        type="time"
+                                                        value={time}
+                                                        onChange={e => this.handleChange('time')(e.target.value)}
+                                                        className={classes.input}
+                                                        InputProps={{disableUnderline: true}}
+                                                        inputProps={{
+                                                            step: 300, // 5 min
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                            </Grid>
                                         </Grid>
-                                        <Grid item xs={12}>
-                                            <FormControl className={classes.formControl}>
-                                                <InputLabel shrink htmlFor="to-point" className={classes.inputLabel}>
-                                                    To
-                                                </InputLabel>
-                                                <Autocomplete
-                                                    id="to-point"
-                                                    placeholder=""
-                                                    className={classes.input}
-                                                    onPlaceSelected={this.handleInput("to")}
-                                                    types={['address']}
-                                                    componentRestrictions={{country: "ua"}}
-                                                />
-                                            </FormControl>
-                                        </Grid>
-                                    </Grid>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-
-                        <Grid item xs={11} container direction="column" spacing={16}>
-                            {
-                                directions && (
-                                    <React.Fragment>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                            {directions && (
+                                <Grid item xs={11} container direction="column" spacing={16}>
+                                    <Grid item>
                                         <Typography variant="headline">
-                                            Alternative routes
+                                            Routes
                                         </Typography>
-                                        {
-                                            directions.routes.map((route, index) => (
-                                                <Grid item>
-                                                    <Card key={index}
-                                                          className={classes.alternativeCard}
-                                                          onClick={this.selectRoute(index)}
-                                                    >
-                                                        <CardContent>{route.summary}</CardContent>
-                                                    </Card>
-                                                </Grid>
-                                            ))
-                                        }
-                                    </React.Fragment>
-                                )
-                            }
+                                    </Grid>
+                                    {
+                                        directions.routes.map((route, index) => (
+                                            <Grid item key={index}>
+                                                <Card
+                                                    className={classes.alternativeCard}
+                                                    style={{background: selectedRoute === index && "#80D8FF" }}
+                                                    onClick={() => this.handleChange('selectedRoute')(index)}
+                                                >
+                                                    <CardContent>{route.summary}</CardContent>
+                                                </Card>
+                                            </Grid>
+                                        ))
+                                    }
+                                </Grid>
+                            )}
+                            <Grid item xs={11}>
+                                <Grid container direction="column">
+                                    <Button
+                                        variant="contained"
+                                        className={classes.button} disabled={!date || !time || selectedRoute === null}
+                                        onClick={this.createTrip}
+                                    >
+                                        Create Trip
+                                    </Button>
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={8}>

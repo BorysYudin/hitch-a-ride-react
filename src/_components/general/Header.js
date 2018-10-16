@@ -18,6 +18,9 @@ import authentication from "../../_reducers/authentication.reducer";
 const styles = {
     root: {
         flexGrow: 1,
+        "& header": {
+            background: "#2B3E50"
+        }
     },
     grow: {
         flexGrow: 1,
