@@ -61,7 +61,12 @@ class Header extends React.Component {
             <div className={classes.root}>
                 <AppBar position="static">
                     <Toolbar>
-                        <Typography variant="title" color="inherit" className={classes.grow}>
+                        <Typography
+                            variant="title"
+                            color="inherit"
+                            className={classes.grow}
+                            onClick={() => history.push('/')}
+                        >
                             Hitch A Ride
                         </Typography>
                         {auth && (

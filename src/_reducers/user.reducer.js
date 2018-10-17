@@ -1,6 +1,7 @@
 import jwt_decode from "jwt-decode";
 
 import userConstants from "../_constants/user.constants";
+import mapConstants from "../_constants/map.constants";
 
 const initialState = {
     isLoading: false
@@ -40,10 +41,17 @@ export default function user(state = initialState, action) {
             const decoded = jwt_decode(action.data.access_token);
 
             return {
-                ...initialState,
+                ...state,
                 email: decoded.identity,
                 role: decoded.user_claims.role
             };
+        }
+
+        case mapConstants.GET_USER_TRIPS_SUCCESS: {
+            return {
+                ...state,
+                trips: action.data.trips
+            }
         }
 
         default:

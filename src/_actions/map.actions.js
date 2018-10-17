@@ -7,7 +7,7 @@ function createTrip(data) {
         return { type: mapConstants.SELECT_ROUTE_REQUEST };
     }
 
-    function success() {
+    function success(response) {
         return { type: mapConstants.SELECT_ROUTE_SUCCESS};
     }
 
@@ -28,8 +28,35 @@ function createTrip(data) {
     };
 }
 
+function getUserTrips() {
+    function request() {
+        return { type: mapConstants.GET_USER_TRIPS_REQUEST };
+    }
+
+    function success(response) {
+        return { type: mapConstants.GET_USER_TRIPS_SUCCESS, data: response.data};
+    }
+
+    function failure(response) {
+        return { type: mapConstants.GET_USER_TRIPS_FAILURE, response };
+    }
+
+    return dispatch => {
+        dispatch(request());
+
+        return mapService.getUserTrips().then(
+            response => dispatch(success(response)),
+            response => {
+                dispatch(failure(response));
+                return Promise.reject(response);
+            }
+        );
+    };
+}
+
 const mapActions = {
-    createTrip
+    createTrip,
+    getUserTrips
 };
 
 export default mapActions;

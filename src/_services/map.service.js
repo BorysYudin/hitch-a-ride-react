@@ -6,8 +6,12 @@ import {handleResponse} from '../_helpers/utils';
 const createTrip = data =>
     axios.post("/api/v1/trips", data, {headers: authHeader()}).then(handleResponse);
 
+const getUserTrips = () =>
+    axios.get("/api/v1/trips", {headers: authHeader()}).then(handleResponse);
+
 const mapService = {
-    createTrip
+    createTrip,
+    getUserTrips
 };
 
 export default mapService;
