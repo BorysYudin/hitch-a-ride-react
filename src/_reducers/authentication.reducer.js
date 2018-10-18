@@ -38,3 +38,7 @@ export default function authentication(state = initialState, action) {
             return state;
     }
 }
+
+// Selectors
+
+export const isAuthenticated = state => Boolean(state.access && state.refresh);

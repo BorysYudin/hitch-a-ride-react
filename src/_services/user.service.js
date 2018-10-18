@@ -12,11 +12,15 @@ const register = data =>
 const logout = refreshToken =>
     axios.post("/auth/logout", {refresh_token: refreshToken}, {headers: {...authHeader()}}).then(handleResponse);
 
+const getCurrent = () =>
+    axios.get("/api/v1/user", {headers: {...authHeader()}}).then(handleResponse);
+
 
 const userService = {
     register,
     login,
-    logout
+    logout,
+    getCurrent
 };
 
 export default userService;

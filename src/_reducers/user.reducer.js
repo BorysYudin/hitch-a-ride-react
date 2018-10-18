@@ -51,3 +51,7 @@ export default function user(state = initialState, action) {
             return state;
     }
 }
+
+// Selectors
+
+export const getFullName = state => `${state.first_name} ${state.last_name}`;

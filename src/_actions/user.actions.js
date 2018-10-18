@@ -84,10 +84,37 @@ function logout(refreshToken) {
     };
 }
 
+function getCurrent() {
+    function request() {
+        return { type: userConstants.GET_CURRENT_REQUEST };
+    }
+
+    function success(response) {
+        return { type: userConstants.GET_CURRENT_SUCCESS, ...response };
+    }
+
+    function failure(response) {
+        return { type: userConstants.GET_CURRENT_FAILURE, response };
+    }
+
+    return dispatch => {
+        dispatch(request());
+
+        return userService.getCurrent().then(
+            response => dispatch(success(response)),
+            response => {
+                dispatch(failure(response));
+                return Promise.reject(response);
+            }
+        );
+    };
+}
+
 const userActions = {
     login,
     logout,
-    register
+    register,
+    getCurrent
 };
 
 export default userActions;

@@ -14,6 +14,7 @@ import Menu from '@material-ui/core/Menu';
 
 import userActions from '../../_actions/user.actions';
 import history from '../../_helpers/history';
+import {getFullName} from '../../_reducers';
 
 const styles = {
     root: {
@@ -53,7 +54,7 @@ class Header extends React.Component {
     };
 
     render() {
-        const {classes, user} = this.props;
+        const {classes, userFullName} = this.props;
         const {auth, anchorEl} = this.state;
         const open = Boolean(anchorEl);
 
@@ -72,7 +73,7 @@ class Header extends React.Component {
                         {auth && (
                             <div>
                                 <div onClick={this.handleMenu} className={classes.dropDownButton}>
-                                    {user.email}
+                                    {userFullName}
                                     <IconButton
                                         aria-owns={open ? 'menu-appbar' : null}
                                         aria-haspopup="true"
@@ -115,7 +116,7 @@ Header.propTypes = {
 
 const mapStateToProps = state => ({
     refreshToken: state.authentication.refresh,
-    user: state.user
+    userFullName: getFullName(state)
 });
 
 
