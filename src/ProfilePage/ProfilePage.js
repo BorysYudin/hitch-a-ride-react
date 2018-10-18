@@ -18,6 +18,7 @@ import DateRange from '@material-ui/icons/DateRange';
 import Done from '@material-ui/icons/Done';
 import Close from '@material-ui/icons/Close';
 import EventAvailable from '@material-ui/icons/EventAvailable';
+import Button from '@material-ui/core/Button';
 
 import {
     StaticGoogleMap,
@@ -29,6 +30,7 @@ import Header from "../_components/general/Header";
 import mapActions from "../_actions/map.actions";
 import MarkerA from "../static/img/marker-a.svg";
 import MarkerB from "../static/img/marker-b.svg";
+import history from "../_helpers/history";
 
 const styles = {
     card: {
@@ -42,6 +44,16 @@ const styles = {
         maxWidth: 1700,
         margin: "0 auto",
         padding: "24px"
+    },
+    button: {
+        color: "#fff",
+        background: "#DF691A",
+        margin: "0 48px",
+        "&:hover": {
+            background: "#DF691A",
+            opacity: 0.9
+        },
+        minWidth: 144
     },
 };
 
@@ -139,7 +151,7 @@ class ProfilePage extends React.Component {
     }
 
     render() {
-        const {classes, user, trips} = this.props;
+        const {classes, trips} = this.props;
         const {selectedType} = this.state;
 
         const currentTrips = {
@@ -153,10 +165,17 @@ class ProfilePage extends React.Component {
             <div>
                 <Header/>
                 <Grid container className={classes.root} spacing={24}>
-                    <Grid item xs={12}>
-                        <Typography variant="headline" gutterBottom>
-                            Your trips
-                        </Typography>
+                    <Grid item xs={12} container>
+                        <Grid item xs>
+                            <Typography variant="headline" gutterBottom>
+                                Your trips
+                            </Typography>
+                        </Grid>
+                        <Grid item xs style={{textAlign: "right"}}>
+                            <Button onClick={() => history.push("/trips/add")} variant="contained" className={classes.button}>
+                                Add Trip
+                            </Button>
+                        </Grid>
                     </Grid>
                     <Grid item xs={12} container spacing={24}>
                         <Grid item xs={2}>
