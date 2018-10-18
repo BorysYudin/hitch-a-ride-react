@@ -7,6 +7,8 @@ import PrivateRoute from '../_components/routes/PrivateRoute';
 
 import HomePage from "../HomePage/HomePage";
 import AuthPage from "../AuthPage/AuthPage";
+import TripDetailsPage from "../TripDetailsPage/TripDetailsPage";
+
 import ProfilePage from "../ProfilePage/ProfilePage";
 import userActions from "../_actions/user.actions";
 
@@ -26,6 +28,7 @@ class App extends React.Component {
         return (
             <div className="container">
                 <PrivateRoute location={location} exact path="/trips/add" component={HomePage}/>
+                <PrivateRoute location={location} exact path="/trips/:id" component={TripDetailsPage}/>
                 <PrivateRoute location={location} exact path="/" component={ProfilePage}/>
                 <GuestRoute location={location} exact path="/auth" component={AuthPage}/>
             </div>

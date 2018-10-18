@@ -1,15 +1,12 @@
 import React from "react";
 import {connect} from "react-redux";
 import moment from "moment";
+import { Link } from "react-router-dom";
 
 import {withStyles} from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardActionArea from '@material-ui/core/CardActionArea';
 import Typography from "@material-ui/core/Typography/Typography";
-import Today from '@material-ui/icons/Today';
-import AccessTime from '@material-ui/icons/AccessTime';
+
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -20,23 +17,15 @@ import Close from '@material-ui/icons/Close';
 import EventAvailable from '@material-ui/icons/EventAvailable';
 import Button from '@material-ui/core/Button';
 
-import {
-    StaticGoogleMap,
-    Marker,
-    Path,
-} from 'react-static-google-map';
-
 import Header from "../_components/general/Header";
 import mapActions from "../_actions/map.actions";
-import MarkerA from "../static/img/marker-a.svg";
-import MarkerB from "../static/img/marker-b.svg";
+
 import history from "../_helpers/history";
+import TripCard from "../_components/map/TripCard";
+
+import {getAllOpted, getAllScheduled, getAllCompleted, getAllCancelled} from "../_reducers";
 
 const styles = {
-    card: {
-        maxWidth: 450,
-        margin: "0 auto"
-    },
     media: {
         objectFit: 'cover',
     },
@@ -57,84 +46,7 @@ const styles = {
     },
 };
 
-const StaticMap = props => {
-    const {route} = props;
-    return (
-        <StaticGoogleMap size="450x345" apiKey="AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk">
-            <Marker
-                location={{
-                    lat: route.request.origin.location.lat,
-                    lng: route.request.origin.location.lng
-                }}
-                label="A"
-            />
-            <Marker
-                location={{
-                    lat: route.request.destination.location.lat,
-                    lng: route.request.destination.location.lng
-                }}
-                label="B"
-            />
-            <Path
-                color="0xff0000ff"
-                weight="5"
-                points={route.routes[0].overview_path}
-            />
-        </StaticGoogleMap>
-    );
-};
 
-const TripCard = ({route, date, time, classes}) => (
-    <Card className={classes.card}>
-        <CardActionArea>
-            <StaticMap route={route}/>
-            <CardContent>
-                <Grid container spacing={24}>
-                    <Grid item container spacing={40}>
-                        <Grid item xs={1}>
-                            <img src={MarkerA} alt="Marker A"/>
-                        </Grid>
-                        <Grid item xs>
-                            <Typography component="p">
-                                {route.routes[0].legs[0].start_address}
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid item container spacing={40}>
-                        <Grid item xs={1}>
-                            <img src={MarkerB} alt="Marker A"/>
-                        </Grid>
-                        <Grid item xs>
-                            <Typography component="p">
-                                {route.routes[0].legs[0].end_address}
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid item container spacing={40}>
-                        <Grid item xs={1}>
-                            <Today/>
-                        </Grid>
-                        <Grid item xs>
-                            <Typography component="p">
-                                {date}
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid item container spacing={40}>
-                        <Grid item xs={1}>
-                            <AccessTime/>
-                        </Grid>
-                        <Grid item xs>
-                            <Typography component="p">
-                                {time}
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </CardContent>
-        </CardActionArea>
-    </Card>
-);
 
 class ProfilePage extends React.Component {
     state = {
@@ -151,14 +63,14 @@ class ProfilePage extends React.Component {
     }
 
     render() {
-        const {classes, trips} = this.props;
+        const {classes, optedTrips, cancelledTrips, completedTrips, scheduledTrips} = this.props;
         const {selectedType} = this.state;
 
         const currentTrips = {
-            "Cancelled": trips.cancelled,
-            "Opted": trips.opted,
-            "Completed": trips.completed,
-            "Scheduled": trips.scheduled
+            "Cancelled": cancelledTrips,
+            "Opted": optedTrips,
+            "Completed": completedTrips,
+            "Scheduled": scheduledTrips
         }[selectedType];
 
         return (
@@ -235,7 +147,9 @@ class ProfilePage extends React.Component {
 
                                             return (
                                                 <Grid item xs={12} lg={4} key={index}>
-                                                    <TripCard route={route} date={date} time={time} classes={classes}/>
+                                                    <Link to={`/trips/${trip.id}`}>
+                                                        <TripCard route={route} date={date} time={time}/>
+                                                    </Link>
                                                 </Grid>
                                             )
                                         })}
@@ -250,7 +164,10 @@ class ProfilePage extends React.Component {
 
 const mapStateToProps = state => ({
     user: state.user,
-    trips: state.trips
+    optedTrips: getAllOpted(state),
+    scheduledTrips: getAllScheduled(state),
+    completedTrips: getAllCompleted(state),
+    cancelledTrips: getAllCancelled(state)
 });
 
 export default connect(mapStateToProps, {getUserTrips: mapActions.getUserTrips})(withStyles(styles)(ProfilePage));
