@@ -20,12 +20,8 @@ function refreshToken(dispatch) {
         return { type: authenticationConstants.JWT_REFRESH_FAILURE, response };
     }
 
-    const auth = JSON.parse(
-        JSON.parse(localStorage.getItem("persist:hitch-a-ride")).authentication
-    );
-
     const freshTokenPromise = authenticationService
-        .refreshJWT(auth.refresh)
+        .refreshJWT()
         .then(response => {
             dispatch(success(response));
             return response;

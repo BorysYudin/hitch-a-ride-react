@@ -32,7 +32,7 @@ export default function authentication(state = initialState, action) {
             return { ...state, freshTokenPromise: action.freshTokenPromise };
 
         case authenticationConstants.JWT_REFRESH_SUCCESS:
-            return { ...state, access: action.data.access, freshTokenPromise: null };
+            return { ...state, access: action.access_token, freshTokenPromise: null };
 
         default:
             return state;

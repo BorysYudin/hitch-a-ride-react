@@ -47,13 +47,6 @@ export default function user(state = initialState, action) {
             };
         }
 
-        case mapConstants.GET_USER_TRIPS_SUCCESS: {
-            return {
-                ...state,
-                trips: action.data.trips
-            }
-        }
-
         default:
             return state;
     }

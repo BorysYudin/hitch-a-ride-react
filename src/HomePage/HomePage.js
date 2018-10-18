@@ -13,10 +13,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
+import Button from "@material-ui/core/Button/Button";
 
 import Header from '../_components/general/Header';
 import mapActions from '../_actions/map.actions';
-import Button from "@material-ui/core/Button/Button";
+import history from "../_helpers/history";
+
 
 
 const styles = {
@@ -167,7 +169,7 @@ class HomePage extends React.Component {
                 departure: moment(`${date} ${time}`, "YYYY-MM-DD HH:mm").valueOf() / 1000
             };
 
-            this.props.createTrip(data);
+            this.props.createTrip(data).then(() => history.push("/"));
         }
     };
 

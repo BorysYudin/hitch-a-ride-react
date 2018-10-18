@@ -1,14 +1,14 @@
 import axios from "axios";
 
-import authHeader from "../_helpers/auth-header";
+import refreshHeader from "../_helpers/refresh-header";
 
 const handleResponse = response =>
     response.status === 200
         ? response.data
         : Promise.reject(response.statusText);
 
-const refreshJWT = refresh =>
-    axios.post("/auth/refresh", { refresh }, {headers: {...authHeader()}}).then(handleResponse);
+const refreshJWT = () =>
+    axios.get("/auth/refresh", {headers: refreshHeader()}).then(handleResponse);
 
 const authenticationService = {
     refreshJWT

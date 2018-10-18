@@ -103,7 +103,7 @@ function Transition(props) {
 class LoginForm extends React.Component {
 
     render() {
-        const {email, password, handleClose, classes, open, handleChange, handleLogin } = this.props;
+        const {email, password, handleClose, classes, open, handleChange, handleLogin} = this.props;
 
         return (
             <Dialog
@@ -122,7 +122,12 @@ class LoginForm extends React.Component {
                 </DialogTitle>
                 <DialogContent className={classes.dialogContent}>
                     <FormControl className={classes.margin}>
-                        <InputLabel shrink htmlFor="email" className={classes.formLabel}>
+                        <InputLabel
+                            shrink
+                            htmlFor="email"
+                            className={classes.formLabel}
+                            FormLabelClasses={{focused: classes.formLabel}}
+                        >
                             Email
                         </InputLabel>
                         <InputBase
