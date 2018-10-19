@@ -5,7 +5,6 @@ import {withStyles} from '@material-ui/core/styles';
 import moment from 'moment';
 
 import Autocomplete from 'react-google-autocomplete';
-import {withGoogleMap, GoogleMap, Marker, DirectionsRenderer, Polyline} from "react-google-maps";
 import Grid from '@material-ui/core/Grid';
 import CardContent from "@material-ui/core/CardContent/CardContent";
 import Card from "@material-ui/core/Card/Card";
@@ -16,9 +15,10 @@ import TextField from '@material-ui/core/TextField';
 import Button from "@material-ui/core/Button/Button";
 
 import Header from '../_components/general/Header';
+import MapComponent from "../_components/map/MapComponent";
 import mapActions from '../_actions/map.actions';
 import history from "../_helpers/history";
-
+import {DirectionsRenderer, GoogleMap, Marker, Polyline} from "react-google-maps";
 
 
 const styles = {
@@ -103,52 +103,6 @@ const styles = {
     },
 };
 
-class MapComponent extends React.Component {
-    render() {
-        const {from, to, directions, selectedRoute} = this.props;
-
-        let directionsArray = [];
-        if (directions && selectedRoute !== null)
-            directionsArray.push(
-                <Polyline
-                    path={directions.routes[selectedRoute].overview_path}
-                    key="selected-route"
-                    geodesic={true}
-                    options={{
-                        strokeColor: "#01579B",
-                        strokeOpacity: 0.8,
-                        strokeWeight: 5,
-                        clickable: true
-                    }}
-                />
-            );
-        else if (directions)
-            for (let i = 0; i < directions.routes.length; i++)
-                if (i !== selectedRoute)
-                    directionsArray.push(
-                        <DirectionsRenderer
-                            key={i}
-                            directions={directions}
-                            routeIndex={i}
-                        />
-                    );
-
-
-        return (
-            <GoogleMap
-                defaultZoom={10}
-                defaultCenter={{lat: 49.83826, lng: 24.02324}}
-            >
-                {from && <Marker position={{lat: from.geometry.location.lat(), lng: from.geometry.location.lng()}}/>}
-                {to && <Marker position={{lat: to.geometry.location.lat(), lng: to.geometry.location.lng()}}/>}
-                {directionsArray}
-            </GoogleMap>
-        )
-    }
-}
-
-MapComponent = withGoogleMap(MapComponent);
-
 class HomePage extends React.Component {
     state = {
         from: null,
@@ -205,6 +159,32 @@ class HomePage extends React.Component {
     render() {
         const {classes} = this.props;
         const {from, to, directions, date, time, selectedRoute} = this.state;
+
+        let directionsArray = [];
+        if (directions && selectedRoute !== null)
+            directionsArray.push(
+                <Polyline
+                    path={directions.routes[selectedRoute].overview_path}
+                    key="selected-route"
+                    geodesic={true}
+                    options={{
+                        strokeColor: "#01579B",
+                        strokeOpacity: 0.8,
+                        strokeWeight: 5,
+                        clickable: true
+                    }}
+                />
+            );
+        else if (directions)
+            for (let i = 0; i < directions.routes.length; i++)
+                if (i !== selectedRoute)
+                    directionsArray.push(
+                        <DirectionsRenderer
+                            key={i}
+                            directions={directions}
+                            routeIndex={i}
+                        />
+                    );
 
         return (
             <div>
@@ -330,11 +310,13 @@ class HomePage extends React.Component {
                                 loadingElement={<div style={{height: `100%`}}/>}
                                 containerElement={<div style={{height: `700px`}}/>}
                                 mapElement={<div style={{height: `100%`}}/>}
-                                from={from}
-                                to={to}
-                                directions={directions}
-                                selectedRoute={selectedRoute}
-                            />
+                            >
+                                {from && <Marker
+                                    position={{lat: from.geometry.location.lat(), lng: from.geometry.location.lng()}}/>}
+                                {to &&
+                                <Marker position={{lat: to.geometry.location.lat(), lng: to.geometry.location.lng()}}/>}
+                                {directionsArray}
+                            </MapComponent>
                         </Card>
                     </Grid>
                 </Grid>

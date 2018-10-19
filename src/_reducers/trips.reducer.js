@@ -125,10 +125,10 @@ export default trips;
 
 // Selectors
 export const getAllIds = state => {
-    const ids = [];
+    let ids = [];
     for(let el in state.ids)
         if(state.ids.hasOwnProperty(el))
-            ids.concat(state.ids[el]);
+            ids = ids.concat(state.ids[el]);
 
     return ids;
 };
@@ -146,5 +146,9 @@ export const getAllOpted = state => state.ids.opted.map(id => state.byId.opted[i
 export const getAllScheduled = state => state.ids.scheduled.map(id => state.byId.scheduled[id]);
 export const getAllCompleted = state => state.ids.completed.map(id => state.byId.completed[id]);
 export const getAllCancelled = state => state.ids.cancelled.map(id => state.byId.cancelled[id]);
+export const getAllTrips = state => {
+    const allById = getAllById(state);
+    return getAllIds(state).map(id => allById[id]);
+};
 
 export const getTrip = (state, id) => getAllById(state)[id];

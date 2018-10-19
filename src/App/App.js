@@ -28,7 +28,7 @@ class App extends React.Component {
         return (
             <div className="container">
                 <PrivateRoute location={location} exact path="/trips/add" component={HomePage}/>
-                <PrivateRoute location={location} exact path="/trips/:id" component={TripDetailsPage}/>
+                <PrivateRoute location={location} exact path="/trips/:id(\d+)" component={TripDetailsPage}/>
                 <PrivateRoute location={location} exact path="/" component={ProfilePage}/>
                 <GuestRoute location={location} exact path="/auth" component={AuthPage}/>
             </div>

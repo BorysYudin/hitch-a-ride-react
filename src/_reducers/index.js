@@ -24,12 +24,13 @@ export const isAuthenticated = state => fromAuthentication.isAuthenticated(state
 export const getFullName = state => fromUser.getFullName(state.user);
 
 // Trips
-export const getAllIds = state => fromTrips.getAllIds(state);
-export const getAllById = state => fromTrips.getAllById(state);
+export const getAllIds = state => fromTrips.getAllIds(state.trips);
+export const getAllById = state => fromTrips.getAllById(state.trips);
 
 export const getAllOpted = state => fromTrips.getAllOpted(state.trips);
 export const getAllScheduled = state => fromTrips.getAllScheduled(state.trips);
 export const getAllCompleted = state => fromTrips.getAllCompleted(state.trips);
 export const getAllCancelled = state => fromTrips.getAllCancelled(state.trips);
+export const getAllTrips = state => fromTrips.getAllTrips(state.trips);
 
 export const getTrip = (state, id) => fromTrips.getTrip(state.trips, id);

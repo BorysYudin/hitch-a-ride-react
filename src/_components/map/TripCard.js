@@ -16,8 +16,17 @@ import {Marker, Path, StaticGoogleMap} from "react-static-google-map";
 const styles = {
     card: {
         maxWidth: 450,
-        margin: "0 auto"
+        margin: "0 auto",
+        position: "relative"
     },
+
+    selectedCard: {
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        zIndex: 1,
+        background: "rgba(223, 105, 26, 0.3)"
+    }
 };
 
 const StaticMap = props => {
@@ -47,8 +56,9 @@ const StaticMap = props => {
     );
 };
 
-const TripCard = ({route, date, time, classes}) => (
-    <Card className={classes.card}>
+const TripCard = ({route, date, time, classes, ...props, selected}) => (
+    <Card className={classes.card} {...props}>
+        {selected && <div className={classes.selectedCard}/>}
         <CardActionArea>
             <StaticMap route={route}/>
             <CardContent>

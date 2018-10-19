@@ -44,6 +44,13 @@ const styles = {
         },
         minWidth: 144
     },
+    link: {
+        textDecoration: "none",
+        color: "#000",
+        "&:hover": {
+
+        }
+    }
 };
 
 
@@ -147,7 +154,7 @@ class ProfilePage extends React.Component {
 
                                             return (
                                                 <Grid item xs={12} lg={4} key={index}>
-                                                    <Link to={`/trips/${trip.id}`}>
+                                                    <Link to={`/trips/${trip.id}`} className={classes.link}>
                                                         <TripCard route={route} date={date} time={time}/>
                                                     </Link>
                                                 </Grid>

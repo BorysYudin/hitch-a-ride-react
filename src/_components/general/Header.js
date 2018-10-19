@@ -67,6 +67,7 @@ class Header extends React.Component {
                             color="inherit"
                             className={classes.grow}
                             onClick={() => history.push('/')}
+                            style={{cursor: "pointer"}}
                         >
                             Hitch A Ride
                         </Typography>
