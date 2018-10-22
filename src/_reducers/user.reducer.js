@@ -11,27 +11,31 @@ export default function user(state = initialState, action) {
     switch (action.type) {
         case userConstants.GET_CURRENT_REQUEST:
             return {
-                ...initialState,
+                ...state,
                 isLoading: true
             };
         case userConstants.GET_CURRENT_SUCCESS:
             return {
-                ...initialState,
+                ...state,
                 ...action.data
             };
         case userConstants.GET_CURRENT_FAILURE:
             return {...initialState};
 
         case "persist/REHYDRATE": {
-            const {authentication} = action.payload;
+            if (action.payload) {
+                const {authentication} = action.payload;
 
-            if (authentication && authentication.access) {
-                const decoded = jwt_decode(authentication.access);
-                return {
-                    ...initialState,
-                    email: decoded.identity,
-                    role: decoded.user_claims.role
-                };
+                if (authentication && authentication.access) {
+                    const decoded = jwt_decode(authentication.access);
+                    console.log(decoded);
+
+                    return {
+                        ...state,
+                        id: decoded.identity,
+                        role: decoded.user_claims.role
+                    };
+                }
             }
 
             return state;
@@ -42,7 +46,7 @@ export default function user(state = initialState, action) {
 
             return {
                 ...state,
-                email: decoded.identity,
+                id: decoded.identity,
                 role: decoded.user_claims.role
             };
         }

@@ -7,14 +7,15 @@ import {withStyles} from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid/Grid";
 
 
-import {getTrip, getAllTrips, getAllById} from "../_reducers";
+import {getUserTrip, getSuggestedTrips, getSuggestedTripsById} from "../_reducers";
 import mapActions from "../_actions/map.actions";
 import Header from "../_components/general/Header";
 import TripCard from "../_components/map/TripCard";
 import MapComponent from "../_components/map/MapComponent";
 import MarkerA from "../static/img/marker-a.svg";
 import MarkerB from "../static/img/marker-b.svg";
-
+import {createRide} from '../_actions/map.actions';
+import Button from "@material-ui/core/Button/Button";
 
 const styles = {
     root: {
@@ -22,10 +23,25 @@ const styles = {
         margin: "0 auto",
         padding: "24px"
     },
+    scrollableParent: {
+        height: "90vh",
+        overflow: "hidden"
+    },
     scrollable: {
-        maxHeight: "90vh",
-        overflow: "scroll"
-    }
+        height: "100%",
+        overflow: "scroll",
+        marginRight: -50,
+        paddingRight: 50,
+        overflowY: "scroll"
+    },
+    button: {
+        color: "#fff",
+        background: "#DF691A",
+        "&:hover": {
+            background: "#DF691A",
+            opacity: 0.9
+        }
+    },
 };
 
 class TripDetailsPage extends React.Component {
@@ -37,11 +53,22 @@ class TripDetailsPage extends React.Component {
 
     componentDidMount() {
         this.props.getUserTrips();
+        this.props.getSuggestedTrips();
     }
+
+    createRide = () => {
+        const {selectedTrip} = this.state;
+        const {trip, createRide} = this.props;
+
+        createRide({
+            hitchhiker_trip_id: selectedTrip,
+            driver_trip_id: trip.id
+        });
+    };
 
     render() {
         const {selectedTrip} = this.state;
-        const {trip, allTrips, classes, allTripsById} = this.props;
+        const {trip, suggestedTrips, classes, suggestedTripsById} = this.props;
 
         const route = trip && JSON.parse(trip.route);
         const date = trip && moment.unix(trip.departure).format("DD/MM/YYYY");
@@ -50,7 +77,7 @@ class TripDetailsPage extends React.Component {
         let mapChildren = [];
 
         if (selectedTrip !== null) {
-            const trip = allTripsById[selectedTrip];
+            const trip = suggestedTripsById[selectedTrip];
             const route = trip && JSON.parse(trip.route);
 
             mapChildren.push(
@@ -104,36 +131,50 @@ class TripDetailsPage extends React.Component {
                         {trip && <TripCard route={route} date={date} time={time}/>}
                     </Grid>
                     <Grid item xs={4} container>
-                        <Grid item container className={classes.scrollable} spacing={24}>
-                            {
-                                allTrips.map(trip => {
-                                    const route = trip && JSON.parse(trip.route);
-                                    const date = trip && moment.unix(trip.departure).format("DD/MM/YYYY");
-                                    const time = trip && moment.unix(trip.departure).format("HH:mm a");
+                        <Grid item container className={classes.scrollableParent}>
+                            <Grid item container className={classes.scrollable} spacing={24}>
+                                {
+                                    suggestedTrips.map(trip => {
+                                        const route = trip && JSON.parse(trip.route);
+                                        const date = trip && moment.unix(trip.departure).format("DD/MM/YYYY");
+                                        const time = trip && moment.unix(trip.departure).format("HH:mm a");
 
-                                    return (
-                                        <Grid item xs={12} key={trip.id} className={classes.selectedRoute}>
-                                            <TripCard
-                                                route={route}
-                                                date={date}
-                                                time={time}
-                                                onClick={() => this.handleTripSelect(trip.id)}
-                                                selected={trip.id === selectedTrip}
-                                            />
-                                        </Grid>
-                                    );
-                                })
-                            }
+                                        return (
+                                            <Grid item xs={12} key={trip.id} className={classes.selectedRoute}>
+                                                <TripCard
+                                                    route={route}
+                                                    date={date}
+                                                    time={time}
+                                                    onClick={() => this.handleTripSelect(trip.id)}
+                                                    selected={trip.id === selectedTrip}
+                                                />
+                                            </Grid>
+                                        );
+                                    })
+                                }
+                            </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={4} container>
-                        <MapComponent
-                            loadingElement={<div style={{height: `100%`}}/>}
-                            containerElement={<div style={{height: `500px`, width: "100%"}}/>}
-                            mapElement={<div style={{height: `100%`}}/>}
-                        >
-                            {mapChildren}
-                        </MapComponent>
+                    <Grid item xs={4} container spacing={24}>
+                        <Grid item xs={12}>
+                            <MapComponent
+                                loadingElement={<div style={{height: `100%`}}/>}
+                                containerElement={<div style={{height: `500px`, width: "100%"}}/>}
+                                mapElement={<div style={{height: `100%`}}/>}
+                            >
+                                {mapChildren}
+                            </MapComponent>
+                        </Grid>
+                        <Grid item xs={12} style={{textAlign: "right"}}>
+                            <Button
+                                variant="contained"
+                                className={classes.button}
+                                disabled={selectedTrip === null}
+                                onClick={this.createRide}
+                            >
+                                Create Ride
+                            </Button>
+                        </Grid>
                     </Grid>
                 </Grid>
             </div>
@@ -142,9 +183,13 @@ class TripDetailsPage extends React.Component {
 }
 
 const mapStateToProps = (state, props) => ({
-    trip: getTrip(state, props.match.params.id),
-    allTrips: getAllTrips(state),
-    allTripsById: getAllById(state)
+    trip: getUserTrip(state, props.match.params.id),
+    suggestedTrips: getSuggestedTrips(state),
+    suggestedTripsById: getSuggestedTripsById(state)
 });
 
-export default connect(mapStateToProps, {getUserTrips: mapActions.getUserTrips})(withStyles(styles)(TripDetailsPage));
+export default connect(mapStateToProps, {
+    getSuggestedTrips: mapActions.getSuggestedTrips,
+    getUserTrips: mapActions.getUserTrips,
+    createRide: mapActions.createRide,
+})(withStyles(styles)(TripDetailsPage));

@@ -1,7 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import moment from "moment";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 
 import {withStyles} from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -22,8 +22,9 @@ import mapActions from "../_actions/map.actions";
 
 import history from "../_helpers/history";
 import TripCard from "../_components/map/TripCard";
+import OptedTripCard from "../_components/map/OptedTripCard";
 
-import {getAllOpted, getAllScheduled, getAllCompleted, getAllCancelled} from "../_reducers";
+import {getOptedUserTrips, getScheduledUserTrips, getCompletedUserTrips, getCancelledUserTrips} from "../_reducers";
 
 const styles = {
     media: {
@@ -47,12 +48,9 @@ const styles = {
     link: {
         textDecoration: "none",
         color: "#000",
-        "&:hover": {
-
-        }
+        "&:hover": {}
     }
 };
-
 
 
 class ProfilePage extends React.Component {
@@ -67,6 +65,7 @@ class ProfilePage extends React.Component {
 
     componentDidMount() {
         this.props.getUserTrips();
+        this.props.getAllRides();
     }
 
     render() {
@@ -91,7 +90,8 @@ class ProfilePage extends React.Component {
                             </Typography>
                         </Grid>
                         <Grid item xs style={{textAlign: "right"}}>
-                            <Button onClick={() => history.push("/trips/add")} variant="contained" className={classes.button}>
+                            <Button onClick={() => history.push("/trips/add")} variant="contained"
+                                    className={classes.button}>
                                 Add Trip
                             </Button>
                         </Grid>
@@ -154,9 +154,15 @@ class ProfilePage extends React.Component {
 
                                             return (
                                                 <Grid item xs={12} lg={4} key={index}>
-                                                    <Link to={`/trips/${trip.id}`} className={classes.link}>
-                                                        <TripCard route={route} date={date} time={time}/>
-                                                    </Link>
+                                                    {
+                                                        trip.status === "Opted" ?
+                                                            <OptedTripCard route={route} date={date} time={time}/> : (
+                                                                <Link to={`/trips/${trip.id}`} className={classes.link}>
+                                                                    <TripCard route={route} date={date} time={time}/>
+                                                                </Link>
+                                                            )
+                                                    }
+
                                                 </Grid>
                                             )
                                         })}
@@ -171,10 +177,13 @@ class ProfilePage extends React.Component {
 
 const mapStateToProps = state => ({
     user: state.user,
-    optedTrips: getAllOpted(state),
-    scheduledTrips: getAllScheduled(state),
-    completedTrips: getAllCompleted(state),
-    cancelledTrips: getAllCancelled(state)
+    optedTrips: getOptedUserTrips(state),
+    scheduledTrips: getScheduledUserTrips(state),
+    completedTrips: getCompletedUserTrips(state),
+    cancelledTrips: getCancelledUserTrips(state)
 });
 
-export default connect(mapStateToProps, {getUserTrips: mapActions.getUserTrips})(withStyles(styles)(ProfilePage));
+export default connect(mapStateToProps, {
+    getUserTrips: mapActions.getUserTrips,
+    getAllRides: mapActions.getAllRides
+})(withStyles(styles)(ProfilePage));
