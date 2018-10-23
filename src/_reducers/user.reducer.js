@@ -28,7 +28,6 @@ export default function user(state = initialState, action) {
 
                 if (authentication && authentication.access) {
                     const decoded = jwt_decode(authentication.access);
-                    console.log(decoded);
 
                     return {
                         ...state,

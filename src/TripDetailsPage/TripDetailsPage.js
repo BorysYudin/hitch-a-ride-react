@@ -16,16 +16,22 @@ import MarkerA from "../static/img/marker-a.svg";
 import MarkerB from "../static/img/marker-b.svg";
 import {createRide} from '../_actions/map.actions';
 import Button from "@material-ui/core/Button/Button";
+import Typography from "@material-ui/core/Typography/Typography";
 
 const styles = {
     root: {
+        height: "100vh",
+        overflow: "hidden"
+    },
+    page: {
         maxWidth: 1700,
         margin: "0 auto",
         padding: "24px"
     },
     scrollableParent: {
         height: "90vh",
-        overflow: "hidden"
+        overflow: "hidden",
+        paddingBottom: 50
     },
     scrollable: {
         height: "100%",
@@ -42,6 +48,9 @@ const styles = {
             opacity: 0.9
         }
     },
+    title: {
+        margin: "0 0 24px"
+    }
 };
 
 class TripDetailsPage extends React.Component {
@@ -124,38 +133,51 @@ class TripDetailsPage extends React.Component {
         }
 
         return (
-            <div>
+            <div className={classes.root}>
                 <Header/>
-                <Grid container className={classes.root} alignItems="flex-start">
+                <Grid container className={classes.page} alignItems="flex-start">
                     <Grid item xs={4} container>
-                        {trip && <TripCard route={route} date={date} time={time}/>}
+                        <Grid item xs={12}>
+                            <Typography variant="title" className={classes.title}>
+                                Your trip
+                            </Typography>
+                        </Grid>
+                        {trip && <Grid item><TripCard route={route} date={date} time={time}/></Grid>}
                     </Grid>
-                    <Grid item xs={4} container>
-                        <Grid item container className={classes.scrollableParent}>
-                            <Grid item container className={classes.scrollable} spacing={24}>
-                                {
-                                    suggestedTrips.map(trip => {
-                                        const route = trip && JSON.parse(trip.route);
-                                        const date = trip && moment.unix(trip.departure).format("DD/MM/YYYY");
-                                        const time = trip && moment.unix(trip.departure).format("HH:mm a");
+                    <Grid item xs={4} container className={classes.scrollableParent}>
+                        <Grid item>
+                            <Typography variant="title" className={classes.title}>
+                                Suggested trips
+                            </Typography>
+                        </Grid>
+                        <Grid item container className={classes.scrollable} spacing={24}>
+                            {
+                                suggestedTrips.map(trip => {
+                                    const route = trip && JSON.parse(trip.route);
+                                    const date = trip && moment.unix(trip.departure).format("DD/MM/YYYY");
+                                    const time = trip && moment.unix(trip.departure).format("HH:mm a");
 
-                                        return (
-                                            <Grid item xs={12} key={trip.id} className={classes.selectedRoute}>
-                                                <TripCard
-                                                    route={route}
-                                                    date={date}
-                                                    time={time}
-                                                    onClick={() => this.handleTripSelect(trip.id)}
-                                                    selected={trip.id === selectedTrip}
-                                                />
-                                            </Grid>
-                                        );
-                                    })
-                                }
-                            </Grid>
+                                    return (
+                                        <Grid item xs={12} key={trip.id} className={classes.selectedRoute}>
+                                            <TripCard
+                                                route={route}
+                                                date={date}
+                                                time={time}
+                                                onClick={() => this.handleTripSelect(trip.id)}
+                                                selected={trip.id === selectedTrip}
+                                            />
+                                        </Grid>
+                                    );
+                                })
+                            }
                         </Grid>
                     </Grid>
                     <Grid item xs={4} container spacing={24}>
+                        <Grid item xs={12}>
+                            <Typography variant="title">
+                                Result Ride
+                            </Typography>
+                        </Grid>
                         <Grid item xs={12}>
                             <MapComponent
                                 loadingElement={<div style={{height: `100%`}}/>}

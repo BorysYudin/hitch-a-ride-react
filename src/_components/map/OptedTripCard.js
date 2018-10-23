@@ -2,42 +2,46 @@ import React from "react";
 
 import {withStyles} from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card/Card";
-import CardActionArea from "@material-ui/core/CardActionArea/CardActionArea";
-import CardContent from "@material-ui/core/CardContent/CardContent";
+import Divider from '@material-ui/core/Divider';
 import Grid from "@material-ui/core/Grid/Grid";
 import Typography from "@material-ui/core/Typography/Typography";
 import Today from "@material-ui/icons/Today";
 import AccessTime from '@material-ui/icons/AccessTime';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 
 import MarkerA from "../../static/img/marker-a.svg";
 import MarkerB from "../../static/img/marker-b.svg";
+import GreenMarkerA from "../../static/img/green-marker-a.png";
+import GreenMarkerB from "../../static/img/green-marker-b.png";
+
 import {Marker, Path, StaticGoogleMap} from "react-static-google-map";
+import moment from "moment";
 
 const styles = {
     card: {
-        maxWidth: 450,
+        width: "100%",
         margin: "0 auto",
         position: "relative"
     },
-
-    selectedCard: {
-        position: "absolute",
-        height: "100%",
-        width: "100%",
-        zIndex: 1,
-        background: "rgba(223, 105, 26, 0.3)"
+    staticMap: {
+        "& img": {
+            display: "block"
+        }
     }
 };
 
 const StaticMap = props => {
-    const {route} = props;
+    const {route, optedRoute} = props;
     return (
-        <StaticGoogleMap size="450x345" apiKey="AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk">
+        <StaticGoogleMap size="440x380" apiKey="AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk">
+
             <Marker
                 location={{
                     lat: route.request.origin.location.lat,
                     lng: route.request.origin.location.lng
                 }}
+                color="0x01c73888"
                 label="A"
             />
             <Marker
@@ -45,68 +49,162 @@ const StaticMap = props => {
                     lat: route.request.destination.location.lat,
                     lng: route.request.destination.location.lng
                 }}
+                color="0x01c73888"
                 label="B"
             />
             <Path
-                color="0xff0000ff"
+                color="0x01c738aa"
                 weight="5"
                 points={route.routes[0].overview_path}
             />
+
+            {optedRoute && <Marker
+                location={{
+                    lat: optedRoute.request.origin.location.lat,
+                    lng: optedRoute.request.origin.location.lng
+                }}
+                color="0xff000088"
+                label="A"
+            />}
+            {optedRoute && <Marker
+                location={{
+                    lat: optedRoute.request.destination.location.lat,
+                    lng: optedRoute.request.destination.location.lng
+                }}
+                color="0xff000088"
+                label="B"
+            />}
+            {optedRoute && <Path
+                color="0xff000088"
+                weight="5"
+                points={optedRoute.routes[0].overview_path}
+            />}
         </StaticGoogleMap>
     );
 };
 
-const OptedTripCard = ({route, date, time, classes, ...props, selected}) => (
-    <Card className={classes.card} {...props}>
-        {selected && <div className={classes.selectedCard}/>}
-        <CardActionArea>
-            <StaticMap route={route}/>
-            <CardContent>
-                <Grid container spacing={24}>
-                    <Grid item container spacing={40}>
-                        <Grid item xs={1}>
-                            <img src={MarkerA} alt="Marker A"/>
-                        </Grid>
-                        <Grid item xs>
-                            <Typography component="p">
-                                {route.routes[0].legs[0].start_address}
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid item container spacing={40}>
-                        <Grid item xs={1}>
-                            <img src={MarkerB} alt="Marker A"/>
-                        </Grid>
-                        <Grid item xs>
-                            <Typography component="p">
-                                {route.routes[0].legs[0].end_address}
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid item container spacing={40}>
-                        <Grid item xs={1}>
-                            <Today/>
-                        </Grid>
-                        <Grid item xs>
-                            <Typography component="p">
-                                {date}
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid item container spacing={40}>
-                        <Grid item xs={1}>
-                            <AccessTime/>
-                        </Grid>
-                        <Grid item xs>
-                            <Typography component="p">
-                                {time}
-                            </Typography>
-                        </Grid>
-                    </Grid>
+const OptedTripCard = props => {
+    const {driverTrip, hitchhikerTrip, classes, selected} = props;
+
+    const driverRoute = driverTrip.route && JSON.parse(driverTrip.route);
+    const driverDate = driverTrip.departure && moment.unix(driverTrip.departure).format("DD/MM/YYYY");
+    const driverTime = driverTrip.departure && moment.unix(driverTrip.departure).format("HH:mm a");
+
+    const hitchhikerRoute = hitchhikerTrip.route && JSON.parse(hitchhikerTrip.route);
+    const hitchhikerDate = hitchhikerTrip.departure && moment.unix(hitchhikerTrip.departure).format("DD/MM/YYYY");
+    const hitchhikerTime = hitchhikerTrip.departure && moment.unix(hitchhikerTrip.departure).format("HH:mm a");
+
+
+    return (
+        <Card className={classes.card}>
+            {selected && <div className={classes.selectedCard}/>}
+
+            <Grid container alignItems="center">
+                <Grid item xs={6}>
+                    <List>
+                        <ListItem>
+                            <Grid item container>
+                                <Grid item container spacing={40}>
+                                    <Grid item xs={1}>
+                                        <img src={GreenMarkerA} alt="Marker A"/>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Typography component="p">
+                                            {driverRoute.routes[0].legs[0].start_address}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                                <Grid item container spacing={40}>
+                                    <Grid item xs={1}>
+                                        <img src={GreenMarkerB} alt="Marker B"/>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Typography component="p">
+                                            {driverRoute.routes[0].legs[0].end_address}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                                <Grid item container spacing={40}>
+                                    <Grid item xs={1}>
+                                        <Today/>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Typography component="p">
+                                            {driverDate}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                                <Grid item container spacing={40}>
+                                    <Grid item xs={1}>
+                                        <AccessTime/>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Typography component="p">
+                                            {driverTime}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </ListItem>
+                        <li>
+                            <Divider inset/>
+                        </li>
+                        <ListItem>
+                            <Grid item container>
+                                <Grid item container spacing={40}>
+                                    <Grid item xs={1}>
+                                        <img src={MarkerA} alt="Marker A"/>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Typography component="p">
+                                            {hitchhikerRoute.routes[0].legs[0].start_address}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                                <Grid item container spacing={40}>
+                                    <Grid item xs={1}>
+                                        <img src={MarkerB} alt="Marker A"/>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Typography component="p">
+                                            {hitchhikerRoute.routes[0].legs[0].end_address}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                                <Grid item container spacing={40}>
+                                    <Grid item xs={1}>
+                                        <Today/>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Typography component="p">
+                                            {hitchhikerDate}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                                <Grid item container spacing={40}>
+                                    <Grid item xs={1}>
+                                        <AccessTime/>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Typography component="p">
+                                            {hitchhikerTime}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </ListItem>
+                    </List>
                 </Grid>
-            </CardContent>
-        </CardActionArea>
-    </Card>
-);
+                <Grid item xs={6} className={classes.staticMap}>
+                    <StaticMap
+                        route={driverRoute}
+                        optedRoute={hitchhikerRoute}
+                    />
+                </Grid>
+            </Grid>
+
+        </Card>
+    )
+};
 
 export default withStyles(styles)(OptedTripCard);

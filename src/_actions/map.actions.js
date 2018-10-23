@@ -117,20 +117,20 @@ function createRide(data) {
     };
 }
 
-function getAllRides() {
+function getUserRides() {
     function request() {
-        return {type: mapConstants.GET_ALL_RIDES_REQUEST};
+        return {type: mapConstants.GET_USER_RIDES_REQUEST};
     }
 
     function success(response) {
         const state = store.getState();
         const {user} = state;
 
-        return {type: mapConstants.GET_ALL_RIDES_SUCCESS, data: {...response.data, user}};
+        return {type: mapConstants.GET_USER_RIDES_SUCCESS, data: {...response.data, user}};
     }
 
     function failure(response) {
-        return {type: mapConstants.GET_ALL_RIDES_FAILURE, response};
+        return {type: mapConstants.GET_USER_RIDES_FAILURE, response};
     }
 
     return dispatch => {
@@ -151,7 +151,7 @@ const mapActions = {
     getUserTrips,
     getSuggestedTrips,
     createRide,
-    getAllRides
+    getUserRides
 };
 
 export default mapActions;

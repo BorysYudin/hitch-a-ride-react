@@ -16,7 +16,6 @@ import {Marker, Path, StaticGoogleMap} from "react-static-google-map";
 const styles = {
     card: {
         maxWidth: 450,
-        margin: "0 auto",
         position: "relative"
     },
 

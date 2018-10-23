@@ -30,6 +30,10 @@ const styles = {
         "&:hover": {
             cursor: "pointer"
         }
+    },
+    userName: {
+        color: "#eee",
+        display: "inline"
     }
 };
 
@@ -74,7 +78,9 @@ class Header extends React.Component {
                         {auth && (
                             <div>
                                 <div onClick={this.handleMenu} className={classes.dropDownButton}>
-                                    {userFullName}
+                                    <Typography variant="subheading" className={classes.userName}>
+                                        {userFullName}
+                                    </Typography>
                                     <IconButton
                                         aria-owns={open ? 'menu-appbar' : null}
                                         aria-haspopup="true"

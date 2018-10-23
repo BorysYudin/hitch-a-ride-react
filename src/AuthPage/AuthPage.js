@@ -126,7 +126,6 @@ class AuthPage extends React.Component {
     render() {
         const {classes} = this.props;
         const {login, loginDialog, registerDialog, tab, hitchhiker, driver } = this.state;
-        console.log(classes.button);
 
         return (
             <div className={classes.page}>

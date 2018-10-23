@@ -5,7 +5,7 @@ import mapConstants from "../_constants/map.constants";
 
 function ids(state = [], action) {
     switch (action.type) {
-        case mapConstants.GET_ALL_RIDES_SUCCESS:
+        case mapConstants.GET_USER_RIDES_SUCCESS:
             return action.data.trips.map(ride => ride.id);
         default:
             return state;
@@ -14,7 +14,7 @@ function ids(state = [], action) {
 
 function byId(state = {}, action) {
     switch (action.type) {
-        case mapConstants.GET_ALL_RIDES_SUCCESS: {
+        case mapConstants.GET_USER_RIDES_SUCCESS: {
             const newState = {...state};
             action.data.trips.forEach(ride => newState[ride.id] = ride);
             return newState;
@@ -33,27 +33,27 @@ const rides = combineReducers({
 export default rides;
 
 // Selectors
-export const getAllIds = state => {
-    let ids = [];
-    for (let el in state.ids)
-        if (state.ids.hasOwnProperty(el))
-            ids = ids.concat(state.ids[el]);
+export const getAllIds = state => state.ids;
 
-    return ids;
-};
+export const getAllById = state => ({...state.byId});
 
-export const getAllById = state => {
-    let byId = {};
-    for (let el in state.byId)
-        if (state.byId.hasOwnProperty(el))
-            byId = {...byId, ...state.byId[el]};
-
-    return byId;
-};
-
-export const getAllRides = state => {
+export const getAllUserRides = state => {
     const allById = getAllById(state);
     return getAllIds(state).map(id => allById[id]);
 };
 
-export const getRide = (state, id) => getAllById(state)[id];
+export const getUserRide = (state, id) => getAllById(state)[id];
+
+export const getUserRideByDriverId = (state, driverId) => {
+    const allById = getAllById(state);
+    getAllIds(state).forEach(id => {
+        if (allById[id].driver_trip.id === driverId) return allById[id];
+    });
+};
+
+export const getUserRideByHitchhikerId = (state, hitchhikerId) => {
+    const allById = getAllById(state);
+    getAllIds(state).forEach(id => {
+        if (allById[id].hitchhiker_trip.id === hitchhikerId) return allById[id];
+    });
+};

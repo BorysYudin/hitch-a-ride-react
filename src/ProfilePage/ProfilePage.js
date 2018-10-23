@@ -24,7 +24,13 @@ import history from "../_helpers/history";
 import TripCard from "../_components/map/TripCard";
 import OptedTripCard from "../_components/map/OptedTripCard";
 
-import {getOptedUserTrips, getScheduledUserTrips, getCompletedUserTrips, getCancelledUserTrips} from "../_reducers";
+import {
+    getOptedUserTrips,
+    getScheduledUserTrips,
+    getCompletedUserTrips,
+    getCancelledUserTrips,
+    getUserRides,
+} from "../_reducers";
 
 const styles = {
     media: {
@@ -65,11 +71,11 @@ class ProfilePage extends React.Component {
 
     componentDidMount() {
         this.props.getUserTrips();
-        this.props.getAllRides();
+        this.props.getUserRides();
     }
 
     render() {
-        const {classes, optedTrips, cancelledTrips, completedTrips, scheduledTrips} = this.props;
+        const {classes, optedTrips, cancelledTrips, completedTrips, scheduledTrips, user, userRides} = this.props;
         const {selectedType} = this.state;
 
         const currentTrips = {
@@ -82,7 +88,7 @@ class ProfilePage extends React.Component {
         return (
             <div>
                 <Header/>
-                <Grid container className={classes.root} spacing={24}>
+                <Grid container className={classes.root} spacing={24} justify="center">
                     <Grid item xs={12} container>
                         <Grid item xs>
                             <Typography variant="headline" gutterBottom>
@@ -152,20 +158,54 @@ class ProfilePage extends React.Component {
                                             const date = moment.unix(trip.departure).format("DD/MM/YYYY");
                                             const time = moment.unix(trip.departure).format("HH:mm a");
 
-                                            return (
-                                                <Grid item xs={12} lg={4} key={index}>
-                                                    {
-                                                        trip.status === "Opted" ?
-                                                            <OptedTripCard route={route} date={date} time={time}/> : (
-                                                                <Link to={`/trips/${trip.id}`} className={classes.link}>
-                                                                    <TripCard route={route} date={date} time={time}/>
-                                                                </Link>
-                                                            )
-                                                    }
+                                            let optedTrip = null;
+                                            let optedTripCard = null;
 
+                                            if (user.role === "Driver") {
+                                                const filteredTrips = userRides.filter(ride => ride.driver_trip.id === trip.id);
+                                                if (filteredTrips.length) {
+                                                    optedTrip = filteredTrips[0].hitchhiker_trip;
+
+                                                    optedTripCard = (
+                                                        <OptedTripCard
+                                                            driverTrip={trip}
+                                                            hitchhikerTrip={optedTrip}
+                                                        />
+                                                    );
+                                                }
+                                            } else if (user.role === "Hitchhiker") {
+                                                const filteredTrips = userRides.filter(ride => ride.hitchhiker_trip.id === trip.id);
+                                                if (filteredTrips.length) {
+                                                    optedTrip = filteredTrips[0].driver_trip;
+
+                                                    optedTripCard = (
+                                                        <OptedTripCard
+                                                            driverTrip={optedTrip}
+                                                            hitchhikerTrip={trip}
+                                                        />
+                                                    );
+                                                }
+                                            }
+
+
+                                            return trip.status === "Opted" ? (
+                                                <Grid item container xs={12} key={index}>
+                                                    <Grid item xs={2}/>
+                                                    <Grid item xs={8}>
+                                                        {optedTripCard}
+                                                    </Grid>
+                                                </Grid>
+                                            ) : (
+                                                <Grid item xs={12} lg={4} key={index}>
+                                                    {user.role === 'Driver' ?
+                                                        (<Link to={`/trips/${trip.id}`} className={classes.link}>
+                                                            <TripCard route={route} date={date} time={time}/>
+                                                        </Link>) : <TripCard route={route} date={date} time={time}/>
+                                                    }
                                                 </Grid>
                                             )
-                                        })}
+                                        })
+                                }
                             </Grid>
                         </Grid>
                     </Grid>
@@ -180,10 +220,11 @@ const mapStateToProps = state => ({
     optedTrips: getOptedUserTrips(state),
     scheduledTrips: getScheduledUserTrips(state),
     completedTrips: getCompletedUserTrips(state),
-    cancelledTrips: getCancelledUserTrips(state)
+    cancelledTrips: getCancelledUserTrips(state),
+    userRides: getUserRides(state)
 });
 
 export default connect(mapStateToProps, {
     getUserTrips: mapActions.getUserTrips,
-    getAllRides: mapActions.getAllRides
+    getUserRides: mapActions.getUserRides
 })(withStyles(styles)(ProfilePage));
