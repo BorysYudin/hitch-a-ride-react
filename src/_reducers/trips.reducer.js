@@ -3,12 +3,23 @@ import {combineReducers} from "redux";
 import mapConstants from "../_constants/map.constants";
 
 
-function optedIds(state = [], action) {
+function allIds(state = {}, action) {
+    switch (action.type) {
+        case mapConstants.GET_USER_TRIPS_SUCCESS:
+            return action.data.trips.map(trip => trip.id);
+
+        default:
+            return state;
+    }
+}
+
+function allById(state = [], action) {
     switch (action.type) {
         case mapConstants.GET_USER_TRIPS_SUCCESS: {
-            const {trips, user} = action.data;
+            const newState = {...state};
+            action.data.trips.forEach(trip => newState[trip.id] = trip);
 
-            return trips.filter(trip => trip.user_id === user.id && trip.status === 'Opted').map(trip => trip.id);
+            return newState;
         }
 
         default:
@@ -16,14 +27,12 @@ function optedIds(state = [], action) {
     }
 }
 
-function optedById(state = {}, action) {
+function optedIds(state = [], action) {
     switch (action.type) {
         case mapConstants.GET_USER_TRIPS_SUCCESS: {
-            const newState = {...state};
             const {trips, user} = action.data;
 
-            trips.filter(trip => trip.user_id === user.id && trip.status === 'Opted').forEach(trip => newState[trip.id] = trip);
-            return newState;
+            return trips.filter(trip => trip.user_id === user.id && trip.status === 'Opted').map(trip => trip.id);
         }
 
         default:
@@ -39,21 +48,8 @@ function scheduledIds(state = [], action) {
             return trips.filter(trip => trip.user_id === user.id && trip.status === "Scheduled").map(trip => trip.id);
         }
 
-        default:
-            return state;
-    }
-
-}
-
-function scheduledById(state = {}, action) {
-    switch (action.type) {
-        case mapConstants.GET_USER_TRIPS_SUCCESS: {
-            const newState = {...state};
-            const {trips, user} = action.data;
-
-            trips.filter(trip => trip.user_id === user.id && trip.status === 'Scheduled').forEach(trip => newState[trip.id] = trip);
-            return newState;
-        }
+        case mapConstants.CANCEL_TRIP_SUCCESS:
+            return state.filter(tripId => tripId !== action.tripId);
 
         default:
             return state;
@@ -75,23 +71,6 @@ function completedIds(state = [], action) {
 
 }
 
-function completedById(state = {}, action) {
-    switch (action.type) {
-        case mapConstants.GET_USER_TRIPS_SUCCESS: {
-            const {trips, user} = action.data;
-            const newState = {...state};
-
-            trips.filter(trip => trip.user_id === user.id && trip.status === 'Completed').forEach(trip => newState[trip.id] = trip);
-            return newState;
-        }
-
-        default:
-            return state;
-    }
-
-}
-
-
 function cancelledIds(state = [], action) {
     switch (action.type) {
         case mapConstants.GET_USER_TRIPS_SUCCESS: {
@@ -100,73 +79,40 @@ function cancelledIds(state = [], action) {
             return trips.filter(trip => trip.user_id === user.id && trip.status === 'Cancelled').map(trip => trip.id);
         }
 
-        default:
-            return state;
-    }
-
-}
-
-function cancelledById(state = {}, action) {
-    switch (action.type) {
-        case mapConstants.GET_USER_TRIPS_SUCCESS: {
-            const {trips, user} = action.data;
-            const newState = {...state};
-
-            trips.filter(trip => trip.user_id === user.id && trip.status === 'Cancelled').forEach(trip => newState[trip.id] = trip);
-
-            return newState;
-        }
+        case mapConstants.CANCEL_TRIP_SUCCESS:
+            return state.slice().concat([action.tripId]);
 
         default:
             return state;
     }
 
 }
+
 
 const ids = combineReducers({
     opted: optedIds,
     scheduled: scheduledIds,
     completed: completedIds,
-    cancelled: cancelledIds
-});
-
-const byId = combineReducers({
-    opted: optedById,
-    scheduled: scheduledById,
-    completed: completedById,
-    cancelled: cancelledById
+    cancelled: cancelledIds,
+    all: allIds
 });
 
 const trips = combineReducers({
     ids,
-    byId
+    byId: allById
 });
 
 export default trips;
 
 // Selectors
-export const getAllIds = state => {
-    let ids = [];
-    for (let el in state.ids)
-        if (state.ids.hasOwnProperty(el))
-            ids = ids.concat(state.ids[el]);
+export const getAllIds = state => state.ids.all.slice();
 
-    return ids;
-};
+export const getAllById = state => ({...state.byId});
 
-export const getAllById = state => {
-    let byId = {};
-    for (let el in state.byId)
-        if (state.byId.hasOwnProperty(el))
-            byId = {...byId, ...state.byId[el]};
-
-    return byId;
-};
-
-export const getAllOpted = state => state.ids.opted.map(id => state.byId.opted[id]);
-export const getAllScheduled = state => state.ids.scheduled.map(id => state.byId.scheduled[id]);
-export const getAllCompleted = state => state.ids.completed.map(id => state.byId.completed[id]);
-export const getAllCancelled = state => state.ids.cancelled.map(id => state.byId.cancelled[id]);
+export const getAllOpted = state => state.ids.opted.map(id => state.byId[id]);
+export const getAllScheduled = state => state.ids.scheduled.map(id => state.byId[id]);
+export const getAllCompleted = state => state.ids.completed.map(id => state.byId[id]);
+export const getAllCancelled = state => state.ids.cancelled.map(id => state.byId[id]);
 export const getAllUserTrips = state => {
     const allById = getAllById(state);
     return getAllIds(state).map(id => allById[id]);

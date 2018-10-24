@@ -30,6 +30,32 @@ function createTrip(data) {
     };
 }
 
+function cancelTrip(tripId) {
+    function request() {
+        return {type: mapConstants.CANCEL_TRIP_REQUEST};
+    }
+
+    function success(tripId) {
+        return {type: mapConstants.CANCEL_TRIP_SUCCESS, tripId};
+    }
+
+    function failure(response) {
+        return {type: mapConstants.CANCEL_TRIP_FAILURE, response};
+    }
+
+    return dispatch => {
+        dispatch(request());
+
+        return mapService.cancelTrip(tripId).then(
+            () => dispatch(success(tripId)),
+            response => {
+                dispatch(failure(response));
+                return Promise.reject(response);
+            }
+        );
+    };
+}
+
 function getUserTrips() {
     function request() {
         return {type: mapConstants.GET_USER_TRIPS_REQUEST};
@@ -151,7 +177,8 @@ const mapActions = {
     getUserTrips,
     getSuggestedTrips,
     createRide,
-    getUserRides
+    getUserRides,
+    cancelTrip
 };
 
 export default mapActions;

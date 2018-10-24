@@ -197,11 +197,22 @@ class ProfilePage extends React.Component {
                                                 </Grid>
                                             ) : (
                                                 <Grid item xs={12} lg={4} key={index}>
-                                                    {user.role === 'Driver' ?
-                                                        (<Link to={`/trips/${trip.id}`} className={classes.link}>
-                                                            <TripCard route={route} date={date} time={time}/>
-                                                        </Link>) : <TripCard route={route} date={date} time={time}/>
-                                                    }
+                                                    {user.role === 'Driver' ? (
+                                                        <TripCard
+                                                            route={route}
+                                                            date={date}
+                                                            time={time}
+                                                            trip={trip}
+                                                            redirectTo={`/trips/${trip.id}`}
+                                                        />
+                                                    ) : (
+                                                        <TripCard
+                                                            route={route}
+                                                            date={date}
+                                                            time={time}
+                                                            trip={trip}
+                                                        />
+                                                    )}
                                                 </Grid>
                                             )
                                         })
