@@ -28,7 +28,14 @@ const styles = {
         "& img": {
             display: "block"
         }
-    }
+    },
+    cardWrapper: {
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        zIndex: 1,
+        background: "rgba(255, 255, 255, 0)"
+    },
 };
 
 const StaticMap = props => {
@@ -84,7 +91,7 @@ const StaticMap = props => {
 };
 
 const OptedTripCard = props => {
-    const {driverTrip, hitchhikerTrip, classes, selected} = props;
+    const {driverTrip, hitchhikerTrip, classes} = props;
 
     const driverRoute = driverTrip.route && JSON.parse(driverTrip.route);
     const driverDate = driverTrip.departure && moment.unix(driverTrip.departure).format("DD/MM/YYYY");
@@ -97,7 +104,7 @@ const OptedTripCard = props => {
 
     return (
         <Card className={classes.card}>
-            {selected && <div className={classes.selectedCard}/>}
+            <div className={classes.cardWrapper}/>
 
             <Grid container alignItems="center">
                 <Grid item xs={6}>

@@ -197,7 +197,7 @@ class ProfilePage extends React.Component {
                                                 </Grid>
                                             ) : (
                                                 <Grid item xs={12} lg={4} key={index}>
-                                                    {user.role === 'Driver' ? (
+                                                    {user.role === 'Driver' && trip.status === "Scheduled" ? (
                                                         <TripCard
                                                             route={route}
                                                             date={date}

@@ -36,6 +36,13 @@ const styles = {
         zIndex: 1,
         background: "rgba(223, 105, 26, 0.3)"
     },
+    cardWrapper: {
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        zIndex: 1,
+        background: "rgba(255, 255, 255, 0)"
+    },
     cancelButton: {
         position: "absolute",
         top: 4,
@@ -92,62 +99,73 @@ class TripCard extends React.Component {
         const {openConfirm} = this.state;
         const {route, date, time, classes, selected, trip, redirectTo} = this.props;
 
+        const cardActionArea = (
+            <React.Fragment>
+                <StaticMap route={route}/>
+                <CardContent>
+                    <Grid container spacing={24}>
+                        <Grid item container spacing={40}>
+                            <Grid item xs={1}>
+                                <img src={MarkerA} alt="Marker A"/>
+                            </Grid>
+                            <Grid item xs>
+                                <Typography component="p">
+                                    {route.routes[0].legs[0].start_address}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                        <Grid item container spacing={40}>
+                            <Grid item xs={1}>
+                                <img src={MarkerB} alt="Marker A"/>
+                            </Grid>
+                            <Grid item xs>
+                                <Typography component="p">
+                                    {route.routes[0].legs[0].end_address}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                        <Grid item container spacing={40}>
+                            <Grid item xs={1}>
+                                <Today/>
+                            </Grid>
+                            <Grid item xs>
+                                <Typography component="p">
+                                    {date}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                        <Grid item container spacing={40}>
+                            <Grid item xs={1}>
+                                <AccessTime/>
+                            </Grid>
+                            <Grid item xs>
+                                <Typography component="p">
+                                    {time}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </CardContent>
+            </React.Fragment>
+        );
+
         return (
             <Card className={classes.card}>
                 {selected && <div className={classes.selectedCard}/>}
+                {!redirectTo && <div className={classes.cardWrapper}/>}
                 {trip && trip.status === "Scheduled" && (
                     <IconButton aria-label="Delete" className={classes.cancelButton}
                                 onClick={this.handleConfirmStatus(true)}>
                         <Close fontSize="small"/>
                     </IconButton>
                 )}
-                <CardActionArea onClick={() => history.push(redirectTo)}>
-                    <StaticMap route={route}/>
-                    <CardContent>
-                        <Grid container spacing={24}>
-                            <Grid item container spacing={40}>
-                                <Grid item xs={1}>
-                                    <img src={MarkerA} alt="Marker A"/>
-                                </Grid>
-                                <Grid item xs>
-                                    <Typography component="p">
-                                        {route.routes[0].legs[0].start_address}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                            <Grid item container spacing={40}>
-                                <Grid item xs={1}>
-                                    <img src={MarkerB} alt="Marker A"/>
-                                </Grid>
-                                <Grid item xs>
-                                    <Typography component="p">
-                                        {route.routes[0].legs[0].end_address}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                            <Grid item container spacing={40}>
-                                <Grid item xs={1}>
-                                    <Today/>
-                                </Grid>
-                                <Grid item xs>
-                                    <Typography component="p">
-                                        {date}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                            <Grid item container spacing={40}>
-                                <Grid item xs={1}>
-                                    <AccessTime/>
-                                </Grid>
-                                <Grid item xs>
-                                    <Typography component="p">
-                                        {time}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </CardContent>
-                </CardActionArea>
+                {
+                    redirectTo ? (
+                        <CardActionArea onClick={() => history.push(redirectTo)}>
+                            {cardActionArea}
+                        </CardActionArea>
+                    ) : cardActionArea
+                }
                 <Dialog
                     open={openConfirm}
                     onClose={this.handleConfirmStatus(false)}
@@ -158,7 +176,8 @@ class TripCard extends React.Component {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.handleConfirmStatus(false)} variant="outlined" className={classes.dialogCancelButton} autoFocus>
+                        <Button onClick={this.handleConfirmStatus(false)} variant="outlined"
+                                className={classes.dialogCancelButton} autoFocus>
                             Cancel
                         </Button>
                         <Button onClick={() => this.cancelClick(trip.id)} variant="contained" color="secondary">
