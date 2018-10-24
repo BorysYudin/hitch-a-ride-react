@@ -17,8 +17,7 @@ import Button from "@material-ui/core/Button/Button";
 import Header from '../_components/general/Header';
 import MapComponent from "../_components/map/MapComponent";
 import mapActions from '../_actions/map.actions';
-import history from "../_helpers/history";
-import {DirectionsRenderer, GoogleMap, Marker, Polyline} from "react-google-maps";
+import {DirectionsRenderer, Marker, Polyline} from "react-google-maps";
 
 
 const styles = {
@@ -123,7 +122,12 @@ class HomePage extends React.Component {
                 departure: moment(`${date} ${time}`, "YYYY-MM-DD HH:mm").valueOf() / 1000
             };
 
-            this.props.createTrip(data).then(() => history.push("/"));
+            this.props.createTrip(data).then(() => this.props.history.push({
+                pathname: "/",
+                state: {
+                    selectedType: "Scheduled"
+                }
+            }));
         }
     };
 

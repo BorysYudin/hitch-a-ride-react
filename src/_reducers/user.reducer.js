@@ -50,6 +50,9 @@ export default function user(state = initialState, action) {
             };
         }
 
+        case userConstants.LOGOUT_SUCCESS:
+            return {...initialState};
+
         default:
             return state;
     }
@@ -57,4 +60,4 @@ export default function user(state = initialState, action) {
 
 // Selectors
 
-export const getFullName = state => `${state.first_name} ${state.last_name}`;
+export const getFullName = state => `${state.first_name || ""} ${state.last_name || ""}`;

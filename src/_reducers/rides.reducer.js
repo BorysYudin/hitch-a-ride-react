@@ -1,12 +1,17 @@
 import {combineReducers} from "redux";
 
 import mapConstants from "../_constants/map.constants";
+import userConstants from "../_constants/user.constants";
 
 
 function ids(state = [], action) {
     switch (action.type) {
         case mapConstants.GET_USER_RIDES_SUCCESS:
             return action.data.trips.map(ride => ride.id);
+
+        case userConstants.LOGOUT_SUCCESS:
+            return [];
+
         default:
             return state;
     }
@@ -19,6 +24,9 @@ function byId(state = {}, action) {
             action.data.trips.forEach(ride => newState[ride.id] = ride);
             return newState;
         }
+
+        case userConstants.LOGOUT_SUCCESS:
+            return {};
 
         default:
             return state;

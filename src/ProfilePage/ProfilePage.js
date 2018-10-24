@@ -1,7 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
 import moment from "moment";
-import {Link} from "react-router-dom";
 
 import {withStyles} from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -60,9 +59,14 @@ const styles = {
 
 
 class ProfilePage extends React.Component {
-    state = {
-        selectedType: "Opted"
-    };
+    constructor(props) {
+        super(props);
+        const {location} = props;
+
+        this.state = {
+            selectedType: location.state && location.state.selectedType ? location.state.selectedType : "Opted"
+        };
+    }
 
     handleListItemClick = (event, index) => {
         this.setState({selectedType: index});
@@ -75,6 +79,7 @@ class ProfilePage extends React.Component {
     }
 
     render() {
+        console.log("LOCATION STATE", this.props.location.state);
         const {classes, optedTrips, cancelledTrips, completedTrips, scheduledTrips, user, userRides} = this.props;
         const {selectedType} = this.state;
 

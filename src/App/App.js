@@ -18,7 +18,15 @@ import {isAuthenticated} from "../_reducers";
 class App extends React.Component {
     componentDidMount() {
         const {isAuthenticated, getCurrentUser} = this.props;
+
         if(isAuthenticated)
+            getCurrentUser();
+    }
+
+    componentDidUpdate(prevProps) {
+        const {isAuthenticated, getCurrentUser} = this.props;
+
+        if(isAuthenticated && isAuthenticated !== prevProps.isAuthenticated)
             getCurrentUser();
     }
 

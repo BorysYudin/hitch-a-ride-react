@@ -67,8 +67,12 @@ const styles = {
     },
     formLabel: {
         fontSize: 18,
-        color: "#fff"
+        color: "#fff",
+        "&$focused": {
+            color: "#fff",
+        }
     },
+    focused: {},
     dialogContent: {
         display: "flex",
         flexDirection: "column",
@@ -101,6 +105,7 @@ function Transition(props) {
 }
 
 class LoginForm extends React.Component {
+    handleKeyPress = e => e.key === "Enter" && this.props.handleLogin();
 
     render() {
         const {email, password, handleClose, classes, open, handleChange, handleLogin} = this.props;
@@ -126,14 +131,16 @@ class LoginForm extends React.Component {
                             shrink
                             htmlFor="email"
                             className={classes.formLabel}
-                            FormLabelClasses={{focused: classes.formLabel}}
+                            FormLabelClasses={{root: classes.formLabel, focused: classes.focused}}
                         >
                             Email
                         </InputLabel>
                         <InputBase
+                            autoFocus
                             id="email"
                             value={email}
                             onChange={handleChange('login')('email')}
+                            onKeyPress={this.handleKeyPress}
                             classes={{
                                 root: classes.inputRoot,
                                 input: classes.input,
@@ -141,13 +148,15 @@ class LoginForm extends React.Component {
                         />
                     </FormControl>
                     <FormControl className={classes.margin}>
-                        <InputLabel shrink htmlFor="password" className={classes.formLabel}>
+                        <InputLabel shrink htmlFor="password" className={classes.formLabel}
+                                    FormLabelClasses={{root: classes.formLabel, focused: classes.focused}}>
                             Password
                         </InputLabel>
                         <InputBase
                             id="password"
                             value={password}
                             onChange={handleChange('login')('password')}
+                            onKeyPress={this.handleKeyPress}
                             type="password"
                             classes={{
                                 root: classes.inputRoot,

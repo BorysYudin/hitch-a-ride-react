@@ -15,6 +15,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 
 import MarkerA from "../../static/img/marker-a.svg";
@@ -97,9 +98,9 @@ class TripCard extends React.Component {
 
     render() {
         const {openConfirm} = this.state;
-        const {route, date, time, classes, selected, trip, redirectTo} = this.props;
+        const {route, date, time, classes, selected, selectable, trip, redirectTo, handleTripSelect} = this.props;
 
-        const cardActionArea = (
+        let cardActionArea = (
             <React.Fragment>
                 <StaticMap route={route}/>
                 <CardContent>
@@ -149,27 +150,35 @@ class TripCard extends React.Component {
             </React.Fragment>
         );
 
+        if (redirectTo)
+            cardActionArea = (
+                <CardActionArea onClick={() => history.push(redirectTo)}>
+                    {cardActionArea}
+                </CardActionArea>
+            );
+        else if (selectable)
+            cardActionArea = (
+                <CardActionArea onClick={() => handleTripSelect()}>
+                    {cardActionArea}
+                </CardActionArea>
+            );
+
         return (
             <Card className={classes.card}>
                 {selected && <div className={classes.selectedCard}/>}
-                {!redirectTo && <div className={classes.cardWrapper}/>}
+                {!redirectTo && !selectable && <div className={classes.cardWrapper}/>}
                 {trip && trip.status === "Scheduled" && (
                     <IconButton aria-label="Delete" className={classes.cancelButton}
                                 onClick={this.handleConfirmStatus(true)}>
                         <Close fontSize="small"/>
                     </IconButton>
                 )}
-                {
-                    redirectTo ? (
-                        <CardActionArea onClick={() => history.push(redirectTo)}>
-                            {cardActionArea}
-                        </CardActionArea>
-                    ) : cardActionArea
-                }
+                {cardActionArea}
                 <Dialog
                     open={openConfirm}
                     onClose={this.handleConfirmStatus(false)}
                 >
+                    <DialogTitle>Cancel trip</DialogTitle>
                     <DialogContent>
                         <DialogContentText id="confirm-dialog-content">
                             Are you sure you want to cancel trip?

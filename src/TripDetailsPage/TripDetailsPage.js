@@ -31,7 +31,8 @@ const styles = {
     scrollableParent: {
         height: "90vh",
         overflow: "hidden",
-        paddingBottom: 50
+        paddingBottom: 50,
+        paddingLeft: 4
     },
     scrollable: {
         height: "100%",
@@ -163,8 +164,9 @@ class TripDetailsPage extends React.Component {
                                                 route={route}
                                                 date={date}
                                                 time={time}
-                                                onClick={() => this.handleTripSelect(trip.id)}
+                                                handleTripSelect={() => this.handleTripSelect(trip.id)}
                                                 selected={trip.id === selectedTrip}
+                                                selectable
                                             />
                                         </Grid>
                                     );

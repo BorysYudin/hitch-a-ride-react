@@ -69,8 +69,12 @@ const styles = {
     },
     formLabel: {
         fontSize: 18,
-        color: "#fff"
+        color: "#fff",
+        "&$focused": {
+            color: "#fff",
+        }
     },
+    focused: {},
     dialogContent: {
         display: "flex",
         flexDirection: "column",
@@ -97,8 +101,21 @@ const styles = {
         padding: 0
     },
     tabs: {
-        justifyContent: "center"
+        justifyContent: "center",
+        overflow: "hidden",
+        borderRadius: 3,
+        margin: "8px 4px"
     },
+    tab: {
+        color: "#fff",
+        flexGrow: 1,
+        borderRadius: 3,
+        textAlign: "center",
+        "&$selected": {
+            background: "#2B3E50",
+        }
+    },
+    selected: {}
 };
 
 function Transition(props) {
@@ -106,6 +123,8 @@ function Transition(props) {
 }
 
 class LoginForm extends React.Component {
+    handleKeyPress = e => e.key === "Enter" && this.props.handleRegister();
+
     render() {
         const {
             handleClose, classes, open, handleChange, tab, handleTabChange, hitchhiker, driver, handleRegister
@@ -131,21 +150,23 @@ class LoginForm extends React.Component {
                         value={tab}
                         onChange={handleTabChange}
                         classes={{flexContainer: classes.tabs}}
-                        TabIndicatorProps={{hidden:'hidden'}}
+                        TabIndicatorProps={{hidden: 'hidden'}}
                     >
-                        <Tab label="Hitchhiker" disableRipple/>
-                        <Tab label="Driver" disableRipple/>
+                        <Tab label="Hitchhiker" classes={{root: classes.tab, selected: classes.selected}} disableRipple/>
+                        <Tab label="Driver" classes={{root: classes.tab, selected: classes.selected}} disableRipple/>
                     </Tabs>
                     {tab === 0 &&
                     <React.Fragment>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="firstName" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="firstName" className={classes.formLabel}
+                                        FormLabelClasses={{root: classes.formLabel, focused: classes.focused}}>
                                 First name
                             </InputLabel>
                             <InputBase
                                 id="firstName"
                                 value={hitchhiker.firstName}
                                 onChange={handleChange('hitchhiker')('firstName')}
+                                onKeyPress={this.handleKeyPress}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -153,13 +174,15 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="lastName" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="lastName" className={classes.formLabel}
+                                        FormLabelClasses={{root: classes.formLabel, focused: classes.focused}}>
                                 Last name
                             </InputLabel>
                             <InputBase
                                 id="lastName"
                                 value={hitchhiker.lastName}
                                 onChange={handleChange('hitchhiker')('lastName')}
+                                onKeyPress={this.handleKeyPress}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -167,13 +190,15 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="emailHitchhiker" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="emailHitchhiker" className={classes.formLabel}
+                                        FormLabelClasses={{root: classes.formLabel, focused: classes.focused}}>
                                 Email
                             </InputLabel>
                             <InputBase
                                 id="emailHitchhiker"
                                 value={hitchhiker.emailHitchhiker}
                                 onChange={handleChange('hitchhiker')('emailHitchhiker')}
+                                onKeyPress={this.handleKeyPress}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -181,13 +206,15 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="passwordHitchhiker" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="passwordHitchhiker" className={classes.formLabel}
+                                        FormLabelClasses={{root: classes.formLabel, focused: classes.focused}}>
                                 Password
                             </InputLabel>
                             <InputBase
                                 id="passwordHitchhiker"
                                 value={hitchhiker.passwordHitchhiker}
                                 onChange={handleChange('hitchhiker')('passwordHitchhiker')}
+                                onKeyPress={this.handleKeyPress}
                                 type="password"
                                 classes={{
                                     root: classes.inputRoot,
@@ -199,13 +226,15 @@ class LoginForm extends React.Component {
                     {tab === 1 &&
                     <React.Fragment>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="firstName" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="firstName" className={classes.formLabel}
+                                        FormLabelClasses={{root: classes.formLabel, focused: classes.focused}}>
                                 First name
                             </InputLabel>
                             <InputBase
                                 id="firstName"
                                 value={driver.firstName}
                                 onChange={handleChange('driver')('firstName')}
+                                onKeyPress={this.handleKeyPress}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -213,13 +242,15 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="lastName" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="lastName" className={classes.formLabel}
+                                        FormLabelClasses={{root: classes.formLabel, focused: classes.focused}}>
                                 Last name
                             </InputLabel>
                             <InputBase
                                 id="lastName"
                                 value={driver.lastName}
                                 onChange={handleChange('driver')('lastName')}
+                                onKeyPress={this.handleKeyPress}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -227,13 +258,15 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="emailDriver" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="emailDriver" className={classes.formLabel}
+                                        FormLabelClasses={{root: classes.formLabel, focused: classes.focused}}>
                                 Email
                             </InputLabel>
                             <InputBase
                                 id="emailDriver"
                                 value={driver.emailDriver}
                                 onChange={handleChange('driver')('emailDriver')}
+                                onKeyPress={this.handleKeyPress}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.input,
@@ -241,13 +274,15 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="passwordDriver" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="passwordDriver" className={classes.formLabel}
+                                        FormLabelClasses={{root: classes.formLabel, focused: classes.focused}}>
                                 Password
                             </InputLabel>
                             <InputBase
                                 id="passwordDriver"
                                 value={driver.passwordDriver}
                                 onChange={handleChange('driver')('passwordDriver')}
+                                onKeyPress={this.handleKeyPress}
                                 type="password"
                                 classes={{
                                     root: classes.inputRoot,
@@ -256,13 +291,15 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="vehicleName" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="vehicleName" className={classes.formLabel}
+                                        FormLabelClasses={{root: classes.formLabel, focused: classes.focused}}>
                                 Vehicle name
                             </InputLabel>
                             <InputBase
                                 id="vehicleName"
                                 value={driver.vehicleName}
                                 onChange={handleChange('driver')('vehicleName')}
+                                onKeyPress={this.handleKeyPress}
                                 type="text"
                                 classes={{
                                     root: classes.inputRoot,
@@ -271,13 +308,15 @@ class LoginForm extends React.Component {
                             />
                         </FormControl>
                         <FormControl className={classes.margin}>
-                            <InputLabel shrink htmlFor="vehicleId" className={classes.formLabel}>
+                            <InputLabel shrink htmlFor="vehicleId" className={classes.formLabel}
+                                        FormLabelClasses={{root: classes.formLabel, focused: classes.focused}}>
                                 Vehicle id
                             </InputLabel>
                             <InputBase
                                 id="vehicleId"
                                 value={driver.vehicleId}
                                 onChange={handleChange('driver')('vehicleId')}
+                                onKeyPress={this.handleKeyPress}
                                 type="text"
                                 classes={{
                                     root: classes.inputRoot,

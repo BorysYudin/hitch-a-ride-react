@@ -1,12 +1,16 @@
 import {combineReducers} from "redux";
 
 import mapConstants from "../_constants/map.constants";
+import userConstants from "../_constants/user.constants";
 
 
 function allIds(state = {}, action) {
     switch (action.type) {
         case mapConstants.GET_USER_TRIPS_SUCCESS:
             return action.data.trips.map(trip => trip.id);
+
+        case userConstants.LOGOUT_SUCCESS:
+            return {};
 
         default:
             return state;
@@ -22,6 +26,9 @@ function allById(state = [], action) {
             return newState;
         }
 
+        case userConstants.LOGOUT_SUCCESS:
+            return [];
+
         default:
             return state;
     }
@@ -34,6 +41,9 @@ function optedIds(state = [], action) {
 
             return trips.filter(trip => trip.user_id === user.id && trip.status === 'Opted').map(trip => trip.id);
         }
+
+        case userConstants.LOGOUT_SUCCESS:
+            return [];
 
         default:
             return state;
@@ -51,6 +61,9 @@ function scheduledIds(state = [], action) {
         case mapConstants.CANCEL_TRIP_SUCCESS:
             return state.filter(tripId => tripId !== action.tripId);
 
+        case userConstants.LOGOUT_SUCCESS:
+            return [];
+
         default:
             return state;
     }
@@ -64,6 +77,9 @@ function completedIds(state = [], action) {
 
             return trips.filter(trip => trip.user_id === user.id && trip.status === 'Completed').map(trip => trip.id);
         }
+
+        case userConstants.LOGOUT_SUCCESS:
+            return [];
 
         default:
             return state;
@@ -81,6 +97,9 @@ function cancelledIds(state = [], action) {
 
         case mapConstants.CANCEL_TRIP_SUCCESS:
             return state.slice().concat([action.tripId]);
+
+        case userConstants.LOGOUT_SUCCESS:
+            return [];
 
         default:
             return state;
