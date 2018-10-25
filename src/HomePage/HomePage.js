@@ -18,6 +18,7 @@ import Header from '../_components/general/Header';
 import MapComponent from "../_components/map/MapComponent";
 import mapActions from '../_actions/map.actions';
 import {DirectionsRenderer, Marker, Polyline} from "react-google-maps";
+import projectActions from "../_actions/project.actions";
 
 
 const styles = {
@@ -114,6 +115,7 @@ class HomePage extends React.Component {
 
     createTrip = () => {
         const {directions, date, time, selectedRoute} = this.state;
+        const {showSnackBar} = this.props;
 
         if (directions && date && time && selectedRoute !== null) {
             const route = {...directions, routes: [directions.routes[selectedRoute]]};
@@ -127,6 +129,9 @@ class HomePage extends React.Component {
                 state: {
                     selectedType: "Scheduled"
                 }
+            })).then(() => showSnackBar({
+                snackVariant: "success",
+                snackMessage: "Trip successfully created",
             }));
         }
     };
@@ -329,4 +334,7 @@ class HomePage extends React.Component {
     }
 }
 
-export default connect(null, {createTrip: mapActions.createTrip})(withStyles(styles)(HomePage));
+export default connect(null, {
+    createTrip: mapActions.createTrip,
+    showSnackBar: projectActions.showSnackBar
+})(withStyles(styles)(HomePage));

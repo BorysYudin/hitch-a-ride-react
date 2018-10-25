@@ -10,13 +10,16 @@ import rides, {getAllById} from "./rides.reducer";
 import * as fromRides from "./rides.reducer";
 import suggestedTrips from "./suggestedTrips.reducer";
 import * as fromSuggestedTrips from "./suggestedTrips.reducer";
+import project from "./project.reducer";
+import * as fromProject from "./project.reducer";
 
 const rootReducer = combineReducers({
     authentication,
     user,
     trips,
     rides,
-    suggestedTrips
+    suggestedTrips,
+    project
 });
 
 export default rootReducer;
@@ -51,3 +54,6 @@ export const getUserRides = state => fromRides.getAllUserRides(state.rides);
 export const getUserRide = (state, id) => fromRides.getUserRide(state.rides, id);
 export const getUserRideByDriverId = (state, driverId) => fromRides.getUserRideByDriverId(state.rides, driverId);
 export const getUserRideByHitchhikerId = (state, hitchhikerId) => fromRides.getUserRideByHitchhikerId(state.rides, hitchhikerId);
+
+// Project
+export const getSnackContent = state => fromProject.getSnackContent(state.project);

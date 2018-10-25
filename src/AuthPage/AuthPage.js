@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
 import {withStyles} from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -12,6 +12,7 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 
 import userActions from "../_actions/user.actions";
+import projectActions from "../_actions/project.actions";
 
 const styles = {
     page: {
@@ -66,12 +67,16 @@ class AuthPage extends React.Component {
             passwordDriver: "",
             vehicleName: "",
             vehicleId: ""
-        }
+        },
     };
 
     handleLogin = () => {
-        const { login: {email, password} } = this.state;
-        this.props.login(email, password);
+        const {login: {email, password}} = this.state;
+        const {showSnackBar} = this.props;
+        this.props.login(email, password).catch(error => showSnackBar({
+            snackVariant: "error",
+            snackMessage: error.response.data.message,
+        }));
     };
 
     handleRegister = () => {
@@ -79,7 +84,7 @@ class AuthPage extends React.Component {
 
         let data = null;
 
-        if(tab === 0)
+        if (tab === 0)
             data = {
                 first_name: hitchhiker.firstName,
                 last_name: hitchhiker.lastName,
@@ -125,7 +130,9 @@ class AuthPage extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {login, loginDialog, registerDialog, tab, hitchhiker, driver } = this.state;
+        const {
+            login, loginDialog, registerDialog, tab, hitchhiker, driver
+        } = this.state;
 
         return (
             <div className={classes.page}>
@@ -178,4 +185,8 @@ AuthPage.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(connect(null, {login: userActions.login, register: userActions.register})(AuthPage));
+export default withStyles(styles)(connect(null, {
+    login: userActions.login,
+    register: userActions.register,
+    showSnackBar: projectActions.showSnackBar
+})(AuthPage));

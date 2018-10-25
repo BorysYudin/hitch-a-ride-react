@@ -2,6 +2,8 @@ import PropTypes from "prop-types";
 import React from "react";
 import {connect} from "react-redux";
 
+import Snackbar from "@material-ui/core/Snackbar/Snackbar";
+
 import GuestRoute from '../_components/routes/GuestRoute';
 import PrivateRoute from '../_components/routes/PrivateRoute';
 
@@ -12,7 +14,10 @@ import TripDetailsPage from "../TripDetailsPage/TripDetailsPage";
 import ProfilePage from "../ProfilePage/ProfilePage";
 import userActions from "../_actions/user.actions";
 
-import {isAuthenticated} from "../_reducers";
+import {isAuthenticated, getSnackContent} from "../_reducers";
+import SnackBarContent from "../_components/messages/SnackBarContent";
+import projectActions from "../_actions/project.actions";
+
 
 
 class App extends React.Component {
@@ -31,7 +36,7 @@ class App extends React.Component {
     }
 
     render() {
-        const {location} = this.props;
+        const {location, snackBar, hideSnackBar} = this.props;
 
         return (
             <div className="container">
@@ -39,6 +44,22 @@ class App extends React.Component {
                 <PrivateRoute location={location} exact path="/trips/:id(\d+)" component={TripDetailsPage}/>
                 <PrivateRoute location={location} exact path="/" component={ProfilePage}/>
                 <GuestRoute location={location} exact path="/auth" component={AuthPage}/>
+
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    open={snackBar.openSnackBar}
+                    autoHideDuration={4000}
+                    onClose={hideSnackBar}
+                >
+                    <SnackBarContent
+                        onClose={hideSnackBar}
+                        variant={snackBar.snackVariant}
+                        message={snackBar.snackMessage}
+                    />
+                </Snackbar>
             </div>
         );
     }
@@ -51,7 +72,11 @@ App.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    isAuthenticated: isAuthenticated(state)
+    isAuthenticated: isAuthenticated(state),
+    snackBar: getSnackContent(state)
 });
 
-export default connect(mapStateToProps, {getCurrentUser: userActions.getCurrent})(App);
+export default connect(mapStateToProps, {
+    getCurrentUser: userActions.getCurrent,
+    hideSnackBar: projectActions.hideSnackBar
+})(App);

@@ -53,7 +53,10 @@ function login(username, password) {
                 dispatch(success(response));
                 history.push("/");
             },
-            response => dispatch(failure(response))
+            response => {
+                dispatch(failure(response));
+                return Promise.reject(response);
+            }
         );
     };
 }
