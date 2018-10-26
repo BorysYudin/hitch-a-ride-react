@@ -13,6 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from "@material-ui/core/Button/Button";
+import Hidden from '@material-ui/core/Hidden';
 
 import Header from '../_components/general/Header';
 import MapComponent from "../_components/map/MapComponent";
@@ -195,139 +196,159 @@ class HomePage extends React.Component {
                         />
                     );
 
+        const formComponent = (
+
+            <Grid container spacing={32}>
+                <Grid item xs={12} md={11}>
+                    <Typography variant="headline" gutterBottom>
+                        Your trip
+                    </Typography>
+                    <Card>
+                        <CardContent>
+                            <Grid container>
+                                <Grid item xs={12}>
+                                    <FormControl className={classes.formControl}>
+                                        <InputLabel shrink htmlFor="from-point"
+                                                    className={classes.inputLabel}>
+                                            From
+                                        </InputLabel>
+                                        <Autocomplete
+                                            id="from-point"
+                                            placeholder=""
+                                            className={classes.input}
+                                            onPlaceSelected={this.handleInput("from")}
+                                            types={['address']}
+                                            componentRestrictions={{country: "ua"}}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <FormControl className={classes.formControl}>
+                                        <InputLabel shrink htmlFor="to-point"
+                                                    className={classes.inputLabel}>
+                                            To
+                                        </InputLabel>
+                                        <Autocomplete
+                                            id="to-point"
+                                            placeholder=""
+                                            className={classes.input}
+                                            onPlaceSelected={this.handleInput("to")}
+                                            types={['address']}
+                                            componentRestrictions={{country: "ua"}}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <FormControl className={classes.formControl}>
+                                        <InputLabel shrink htmlFor="date" className={classes.inputLabel}>
+                                            Date
+                                        </InputLabel>
+                                        <TextField
+                                            id="date"
+                                            type="date"
+                                            onChange={e => this.handleChange('date')(e.target.value)}
+                                            value={date}
+                                            className={classes.input}
+                                            InputProps={{disableUnderline: true}}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <FormControl className={classes.formControl}>
+                                        <InputLabel shrink htmlFor="time" className={classes.inputLabel}>
+                                            Time
+                                        </InputLabel>
+                                        <TextField
+                                            id="time"
+                                            type="time"
+                                            value={time}
+                                            onChange={e => this.handleChange('time')(e.target.value)}
+                                            className={classes.input}
+                                            InputProps={{
+                                                disableUnderline: true
+                                            }}
+                                            inputProps={{
+                                                step: 300 // 5 min
+                                            }}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                {directions && (
+                    <Grid item xs={11} container direction="column" spacing={16}>
+                        <Grid item>
+                            <Typography variant="headline">
+                                Routes
+                            </Typography>
+                        </Grid>
+                        {
+                            directions.routes.map((route, index) => (
+                                <Grid item key={index}>
+                                    <Card
+                                        className={classes.alternativeCard}
+                                        style={{background: selectedRoute === index && "#80D8FF"}}
+                                        onClick={() => this.handleChange('selectedRoute')(index)}
+                                    >
+                                        <CardContent>{route.summary}</CardContent>
+                                    </Card>
+                                </Grid>
+                            ))
+                        }
+                    </Grid>
+                )}
+                <Grid item xs={11}>
+                    <Button
+                        variant="contained"
+                        className={classes.button}
+                        disabled={!date || !time || selectedRoute === null}
+                        onClick={this.createTrip}
+                    >
+                        Create Trip
+                    </Button>
+                </Grid>
+            </Grid>
+
+        );
+
+        const cardComponent = (
+            <Card className={classes.mapCard}>
+                <MapComponent
+                    loadingElement={<div style={{height: `100%`}}/>}
+                    containerElement={<div style={{height: `700px`}}/>}
+                    mapElement={<div style={{height: `100%`}}/>}
+                >
+                    {from && <Marker
+                        position={{lat: from.geometry.location.lat(), lng: from.geometry.location.lng()}}/>}
+                    {to &&
+                    <Marker position={{lat: to.geometry.location.lat(), lng: to.geometry.location.lng()}}/>}
+                    {directionsArray}
+                </MapComponent>
+            </Card>
+        );
+
         return (
             <div>
                 <Header/>
                 <Grid container className={classes.root}>
-                    <Grid item xs={4}>
-                        <Grid container spacing={32}>
-                            <Grid item xs={11}>
-                                <Typography variant="headline" gutterBottom>
-                                    Your trip
-                                </Typography>
-                                <Card>
-                                    <CardContent>
-                                        <Grid container>
-                                            <Grid item xs={12}>
-                                                <FormControl className={classes.formControl}>
-                                                    <InputLabel shrink htmlFor="from-point"
-                                                                className={classes.inputLabel}>
-                                                        From
-                                                    </InputLabel>
-                                                    <Autocomplete
-                                                        id="from-point"
-                                                        placeholder=""
-                                                        className={classes.input}
-                                                        onPlaceSelected={this.handleInput("from")}
-                                                        types={['address']}
-                                                        componentRestrictions={{country: "ua"}}
-                                                    />
-                                                </FormControl>
-                                            </Grid>
-                                            <Grid item xs={12}>
-                                                <FormControl className={classes.formControl}>
-                                                    <InputLabel shrink htmlFor="to-point"
-                                                                className={classes.inputLabel}>
-                                                        To
-                                                    </InputLabel>
-                                                    <Autocomplete
-                                                        id="to-point"
-                                                        placeholder=""
-                                                        className={classes.input}
-                                                        onPlaceSelected={this.handleInput("to")}
-                                                        types={['address']}
-                                                        componentRestrictions={{country: "ua"}}
-                                                    />
-                                                </FormControl>
-                                            </Grid>
-                                            <Grid item xs={12}>
-                                                <FormControl className={classes.formControl}>
-                                                    <InputLabel shrink htmlFor="date" className={classes.inputLabel}>
-                                                        Date
-                                                    </InputLabel>
-                                                    <TextField
-                                                        id="date"
-                                                        type="date"
-                                                        onChange={e => this.handleChange('date')(e.target.value)}
-                                                        value={date}
-                                                        className={classes.input}
-                                                        InputProps={{disableUnderline: true}}
-                                                    />
-                                                </FormControl>
-                                            </Grid>
-                                            <Grid item xs={12}>
-                                                <FormControl className={classes.formControl}>
-                                                    <InputLabel shrink htmlFor="time" className={classes.inputLabel}>
-                                                        Time
-                                                    </InputLabel>
-                                                    <TextField
-                                                        id="time"
-                                                        type="time"
-                                                        value={time}
-                                                        onChange={e => this.handleChange('time')(e.target.value)}
-                                                        className={classes.input}
-                                                        InputProps={{
-                                                            disableUnderline: true
-                                                        }}
-                                                        inputProps={{
-                                                            step: 300 // 5 min
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                            </Grid>
-                                        </Grid>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                            {directions && (
-                                <Grid item xs={11} container direction="column" spacing={16}>
-                                    <Grid item>
-                                        <Typography variant="headline">
-                                            Routes
-                                        </Typography>
-                                    </Grid>
-                                    {
-                                        directions.routes.map((route, index) => (
-                                            <Grid item key={index}>
-                                                <Card
-                                                    className={classes.alternativeCard}
-                                                    style={{background: selectedRoute === index && "#80D8FF"}}
-                                                    onClick={() => this.handleChange('selectedRoute')(index)}
-                                                >
-                                                    <CardContent>{route.summary}</CardContent>
-                                                </Card>
-                                            </Grid>
-                                        ))
-                                    }
-                                </Grid>
-                            )}
-                            <Grid item xs={11}>
-                                <Button
-                                    variant="contained"
-                                    className={classes.button}
-                                    disabled={!date || !time || selectedRoute === null}
-                                    onClick={this.createTrip}
-                                >
-                                    Create Trip
-                                </Button>
-                            </Grid>
+                    <Hidden smDown>
+                        <Grid item md={4}>
+                            {formComponent}
                         </Grid>
-                    </Grid>
-                    <Grid item xs={8}>
-                        <Card className={classes.mapCard}>
-                            <MapComponent
-                                loadingElement={<div style={{height: `100%`}}/>}
-                                containerElement={<div style={{height: `700px`}}/>}
-                                mapElement={<div style={{height: `100%`}}/>}
-                            >
-                                {from && <Marker
-                                    position={{lat: from.geometry.location.lat(), lng: from.geometry.location.lng()}}/>}
-                                {to &&
-                                <Marker position={{lat: to.geometry.location.lat(), lng: to.geometry.location.lng()}}/>}
-                                {directionsArray}
-                            </MapComponent>
-                        </Card>
-                    </Grid>
+                        <Grid item md={8}>
+                            {cardComponent}
+                        </Grid>
+                    </Hidden>
+                    <Hidden mdUp>
+                        <Grid item xs={12}>
+                            {cardComponent}
+                        </Grid>
+                        <Grid item xs={12} style={{marginTop: 12}}>
+                            {formComponent}
+                        </Grid>
+                    </Hidden>
                 </Grid>
             </div>
         )

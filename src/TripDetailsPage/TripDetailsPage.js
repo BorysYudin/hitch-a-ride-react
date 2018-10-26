@@ -5,7 +5,14 @@ import {DirectionsRenderer, Marker, Polyline, MarkerWithLabel} from "react-googl
 
 import {withStyles} from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid/Grid";
-
+import Hidden from '@material-ui/core/Hidden';
+import Button from "@material-ui/core/Button/Button";
+import Typography from "@material-ui/core/Typography/Typography";
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 import {getUserTrip, getSuggestedTrips, getSuggestedTripsById} from "../_reducers";
 import mapActions from "../_actions/map.actions";
@@ -15,23 +22,21 @@ import MapComponent from "../_components/map/MapComponent";
 import MarkerA from "../static/img/marker-a.svg";
 import MarkerB from "../static/img/marker-b.svg";
 import {createRide} from '../_actions/map.actions';
-import Button from "@material-ui/core/Button/Button";
-import Typography from "@material-ui/core/Typography/Typography";
+
 
 const styles = {
     root: {
-        height: "100vh",
-        overflow: "hidden"
+        height: "100vh"
     },
     page: {
         maxWidth: 1700,
         margin: "0 auto",
-        padding: "24px"
+        paddingTop: 24,
+        width: "100%"
     },
     scrollableParent: {
         height: "90vh",
         overflow: "hidden",
-        paddingBottom: 50,
         paddingLeft: 4
     },
     scrollable: {
@@ -39,6 +44,7 @@ const styles = {
         overflow: "scroll",
         marginRight: -50,
         paddingRight: 50,
+        paddingLeft: 4,
         overflowY: "scroll"
     },
     button: {
@@ -49,14 +55,25 @@ const styles = {
             opacity: 0.9
         }
     },
+    showSuggestedTripsButton:{
+        border: "1px solid #DF691A",
+        color: "#DF691A"
+    },
+    closeDialogButton: {
+        color: "#DF691A"
+    },
     title: {
         margin: "0 0 24px"
+    },
+    scrollableContent: {
+        paddingBottom: 50,
     }
 };
 
 class TripDetailsPage extends React.Component {
     state = {
-        selectedTrip: null
+        selectedTrip: null,
+        showSuggestedTrips: false
     };
 
     handleTripSelect = id => this.setState({selectedTrip: id});
@@ -76,8 +93,10 @@ class TripDetailsPage extends React.Component {
         });
     };
 
+    handleTripDialogClose = () => this.setState({showSuggestedTrips: false});
+
     render() {
-        const {selectedTrip} = this.state;
+        const {selectedTrip, showSuggestedTrips} = this.state;
         const {trip, suggestedTrips, classes, suggestedTripsById} = this.props;
 
         const route = trip && JSON.parse(trip.route);
@@ -133,73 +152,141 @@ class TripDetailsPage extends React.Component {
             }
         }
 
+        const reviewCardComponent = (
+            <Grid item xs={12} md={4} container justify="center">
+                <Grid item xs={12}>
+                    <Typography variant="title" className={classes.title}>
+                        Your trip
+                    </Typography>
+                </Grid>
+                {trip && <Grid item><TripCard route={route} date={date} time={time}/></Grid>}
+            </Grid>
+        );
+
+        const suggestedTripsComponent = (
+            <Grid item xs={12} md={4} container className={classes.scrollableParent}>
+                <Grid item>
+                    <Typography variant="title" className={classes.title}>
+                        Suggested trips
+                    </Typography>
+                </Grid>
+                <Grid item className={classes.scrollable}>
+                    <Grid container spacing={24} className={classes.scrollableContent}>
+                        {
+                            suggestedTrips.map(trip => {
+                                const route = trip && JSON.parse(trip.route);
+                                const date = trip && moment.unix(trip.departure).format("DD/MM/YYYY");
+                                const time = trip && moment.unix(trip.departure).format("HH:mm a");
+
+                                return (
+                                    <Grid item xs={12} key={trip.id} className={classes.selectedRoute}>
+                                        <TripCard
+                                            route={route}
+                                            date={date}
+                                            time={time}
+                                            handleTripSelect={() => this.handleTripSelect(trip.id)}
+                                            selected={trip.id === selectedTrip}
+                                            selectable
+                                        />
+                                    </Grid>
+                                );
+                            })
+                        }
+                    </Grid>
+                </Grid>
+            </Grid>
+        );
+
+        const mapComponent = (
+            <Grid item xs={12} md={4} container spacing={24}>
+                <Grid item xs={12}>
+                    <Typography variant="title">
+                        Result Ride
+                    </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    <MapComponent
+                        loadingElement={<div style={{height: `100%`}}/>}
+                        containerElement={<div style={{height: `500px`, width: "100%"}}/>}
+                        mapElement={<div style={{height: `100%`}}/>}
+                    >
+                        {mapChildren}
+                    </MapComponent>
+                </Grid>
+                <Grid item xs={12} style={{textAlign: "right"}}>
+                    <Button
+                        variant="outlined"
+                        className={classes.showSuggestedTripsButton}
+                        style={{marginRight: 12}}
+                        onClick={() => this.setState({showSuggestedTrips: true})}
+                    >
+                        Show suggested trips
+                    </Button>
+                    <Button
+                        variant="contained"
+                        className={classes.button}
+                        disabled={selectedTrip === null}
+                        onClick={this.createRide}
+                    >
+                        Create Ride
+                    </Button>
+                </Grid>
+            </Grid>
+        );
+
         return (
             <div className={classes.root}>
                 <Header/>
-                <Grid container className={classes.page} alignItems="flex-start">
-                    <Grid item xs={4} container>
-                        <Grid item xs={12}>
-                            <Typography variant="title" className={classes.title}>
-                                Your trip
-                            </Typography>
-                        </Grid>
-                        {trip && <Grid item><TripCard route={route} date={date} time={time}/></Grid>}
-                    </Grid>
-                    <Grid item xs={4} container className={classes.scrollableParent}>
-                        <Grid item>
-                            <Typography variant="title" className={classes.title}>
-                                Suggested trips
-                            </Typography>
-                        </Grid>
-                        <Grid item container className={classes.scrollable} spacing={24}>
-                            {
-                                suggestedTrips.map(trip => {
-                                    const route = trip && JSON.parse(trip.route);
-                                    const date = trip && moment.unix(trip.departure).format("DD/MM/YYYY");
-                                    const time = trip && moment.unix(trip.departure).format("HH:mm a");
+                <Grid container className={classes.page} alignItems="flex-start" spacing={16}>
+                    <Hidden smDown>
+                        {reviewCardComponent}
+                        {suggestedTripsComponent}
+                        {mapComponent}
+                    </Hidden>
+                    <Hidden mdUp>
+                        {reviewCardComponent}
 
-                                    return (
-                                        <Grid item xs={12} key={trip.id} className={classes.selectedRoute}>
-                                            <TripCard
-                                                route={route}
-                                                date={date}
-                                                time={time}
-                                                handleTripSelect={() => this.handleTripSelect(trip.id)}
-                                                selected={trip.id === selectedTrip}
-                                                selectable
-                                            />
-                                        </Grid>
-                                    );
-                                })
-                            }
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={4} container spacing={24}>
-                        <Grid item xs={12}>
-                            <Typography variant="title">
-                                Result Ride
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <MapComponent
-                                loadingElement={<div style={{height: `100%`}}/>}
-                                containerElement={<div style={{height: `500px`, width: "100%"}}/>}
-                                mapElement={<div style={{height: `100%`}}/>}
-                            >
-                                {mapChildren}
-                            </MapComponent>
-                        </Grid>
-                        <Grid item xs={12} style={{textAlign: "right"}}>
-                            <Button
-                                variant="contained"
-                                className={classes.button}
-                                disabled={selectedTrip === null}
-                                onClick={this.createRide}
-                            >
-                                Create Ride
-                            </Button>
-                        </Grid>
-                    </Grid>
+                        {mapComponent}
+                        <Dialog
+                            open={this.state.showSuggestedTrips}
+                            onClose={this.handleTripDialogClose}
+                            scroll="paper"
+                            aria-labelledby="scroll-dialog-title"
+                        >
+                            <DialogTitle id="scroll-dialog-title">Suggested trips</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    <Grid container spacing={16}>
+                                        {
+                                            suggestedTrips.map(trip => {
+                                                const route = trip && JSON.parse(trip.route);
+                                                const date = trip && moment.unix(trip.departure).format("DD/MM/YYYY");
+                                                const time = trip && moment.unix(trip.departure).format("HH:mm a");
+
+                                                return (
+                                                    <Grid item xs={12} key={trip.id} className={classes.selectedRoute}>
+                                                        <TripCard
+                                                            route={route}
+                                                            date={date}
+                                                            time={time}
+                                                            handleTripSelect={() => this.handleTripSelect(trip.id)}
+                                                            selected={trip.id === selectedTrip}
+                                                            selectable
+                                                        />
+                                                    </Grid>
+                                                );
+                                            })
+                                        }
+                                    </Grid>
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={this.handleTripDialogClose} className={classes.closeDialogButton}>
+                                    Close
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    </Hidden>
                 </Grid>
             </div>
         );

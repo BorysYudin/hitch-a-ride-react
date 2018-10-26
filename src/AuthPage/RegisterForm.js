@@ -35,7 +35,9 @@ const styles = {
         alignItems: "start"
     },
     dialogRoot: {
-        minWidth: 500
+        maxWidth: 500,
+        width: "100%",
+        margin: "48px 12px"
     },
     margin: {
         margin: 8,

@@ -7,6 +7,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Hidden from '@material-ui/core/Hidden';
 
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
@@ -23,11 +24,13 @@ const styles = {
         alignItems: "start"
     },
     card: {
-        width: 1100,
+        maxWidth: 1100,
+        width: "100%",
         background: "#4E5D6C",
-        marginTop: "5%",
         textAlign: "center",
-        padding: 24
+        padding: 24,
+        margin: 24,
+        marginTop: "5%",
     },
     button: {
         color: "#5cb85c",
@@ -81,7 +84,7 @@ class AuthPage extends React.Component {
 
     handleRegister = () => {
         const {hitchhiker, driver, tab} = this.state;
-        const { showSnackBar} = this.props;
+        const {showSnackBar} = this.props;
 
         let data = null;
 
@@ -145,14 +148,24 @@ class AuthPage extends React.Component {
             <div className={classes.page}>
                 <Card className={classes.card}>
                     <CardContent>
-                        <Typography variant="display3" gutterBottom className={classes.text}>
-                            Welcome to Hitch A Ride!
-                        </Typography>
+                        <Hidden xsDown>
+                            <Typography variant="display3" gutterBottom className={classes.text}>
+                                Welcome to Hitch A Ride!
+                            </Typography>
+                        </Hidden>
+                        <Hidden smUp>
+                            <Typography variant="headline" gutterBottom className={classes.text}>
+                                Welcome to Hitch A Ride!
+                            </Typography>
+                        </Hidden>
                         <Typography variant="title" gutterBottom className={classes.text}>
                             This is a simple app to help people find a ride in Lviv.
                         </Typography>
                         <Typography variant="subheading" gutterBottom className={classes.text}>
                             To get a ride please
+                            <Hidden smUp>
+                                <br/>
+                            </Hidden>
                             <Button variant="outlined" className={classes.button}
                                     onClick={this.handleOpen('loginDialog')}>
                                 Login

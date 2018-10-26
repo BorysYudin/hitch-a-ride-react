@@ -46,7 +46,6 @@ const styles = {
     button: {
         color: "#fff",
         background: "#DF691A",
-        margin: "0 48px",
         "&:hover": {
             background: "#DF691A",
             opacity: 0.9
@@ -102,11 +101,23 @@ class ProfilePage extends React.Component {
                                 Your trips
                             </Typography>
                         </Grid>
-                        <Grid item xs style={{textAlign: "right"}}>
-                            <Button onClick={() => history.push("/trips/add")} variant="contained"
-                                    className={classes.button}>
-                                Add Trip
-                            </Button>
+                        <Grid item xs={12} sm style={{textAlign: "right"}}>
+                            <Hidden xsDown>
+                                <Button onClick={() => history.push("/trips/add")} variant="contained"
+                                        className={classes.button}>
+                                    Add Trip
+                                </Button>
+                            </Hidden>
+                            <Hidden smUp>
+                                <Button
+                                    onClick={() => history.push("/trips/add")} variant="contained"
+                                    className={classes.button}
+                                    style={{width: "100%", margin: "12px 0"}}
+                                >
+
+                                    Add Trip
+                                </Button>
+                            </Hidden>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} container spacing={24} alignItems="center">
