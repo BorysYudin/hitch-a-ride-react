@@ -23,6 +23,7 @@ import MarkerB from "../../static/img/marker-b.svg";
 import {Marker, Path, StaticGoogleMap} from "react-static-google-map";
 import history from "../../_helpers/history";
 import mapActions from "../../_actions/map.actions";
+import projectActions from "../../_actions/project.actions";
 
 const styles = {
     card: {
@@ -93,8 +94,16 @@ class TripCard extends React.Component {
     };
 
     cancelClick = tripId => {
+        const {showSnackBar} = this.props;
+
         this.handleConfirmStatus(false)();
-        this.props.cancelTrip(tripId);
+        this.props.cancelTrip(tripId).then(() => showSnackBar({
+            snackVariant: "success",
+            snackMessage: "Trip successfully canceled",
+        })).catch(error => showSnackBar({
+            snackVariant: "error",
+            snackMessage: error.response.data.message,
+        }));
     };
 
     handleConfirmStatus = status => () => {
@@ -204,4 +213,7 @@ class TripCard extends React.Component {
     }
 }
 
-export default connect(null, {cancelTrip: mapActions.cancelTrip})(withStyles(styles)(TripCard));
+export default connect(null, {
+    cancelTrip: mapActions.cancelTrip,
+    showSnackBar: projectActions.showSnackBar
+})(withStyles(styles)(TripCard));

@@ -22,6 +22,7 @@ import MapComponent from "../_components/map/MapComponent";
 import MarkerA from "../static/img/marker-a.svg";
 import MarkerB from "../static/img/marker-b.svg";
 import {createRide} from '../_actions/map.actions';
+import projectActions from "../_actions/project.actions";
 
 
 const styles = {
@@ -55,7 +56,7 @@ const styles = {
             opacity: 0.9
         }
     },
-    showSuggestedTripsButton:{
+    showSuggestedTripsButton: {
         border: "1px solid #DF691A",
         color: "#DF691A"
     },
@@ -85,12 +86,19 @@ class TripDetailsPage extends React.Component {
 
     createRide = () => {
         const {selectedTrip} = this.state;
-        const {trip, createRide} = this.props;
+        const {trip, createRide, showSnackBar} = this.props;
 
         createRide({
             hitchhiker_trip_id: selectedTrip,
             driver_trip_id: trip.id
-        });
+        }).then(() => showSnackBar({
+            snackVariant: "success",
+            snackMessage: "Trip successfully canceled",
+        })).catch(error => showSnackBar({
+            snackVariant: "error",
+            snackMessage: error.response.data.message,
+        }));
+        ;
     };
 
     handleTripDialogClose = () => this.setState({showSuggestedTrips: false});
@@ -214,14 +222,16 @@ class TripDetailsPage extends React.Component {
                     </MapComponent>
                 </Grid>
                 <Grid item xs={12} style={{textAlign: "right"}}>
-                    <Button
-                        variant="outlined"
-                        className={classes.showSuggestedTripsButton}
-                        style={{marginRight: 12}}
-                        onClick={() => this.setState({showSuggestedTrips: true})}
-                    >
-                        Show suggested trips
-                    </Button>
+                    <Hidden mdUp>
+                        <Button
+                            variant="outlined"
+                            className={classes.showSuggestedTripsButton}
+                            style={{marginRight: 12}}
+                            onClick={() => this.setState({showSuggestedTrips: true})}
+                        >
+                            Show suggested trips
+                        </Button>
+                    </Hidden>
                     <Button
                         variant="contained"
                         className={classes.button}
@@ -303,4 +313,5 @@ export default connect(mapStateToProps, {
     getSuggestedTrips: mapActions.getSuggestedTrips,
     getUserTrips: mapActions.getUserTrips,
     createRide: mapActions.createRide,
+    showSnackBar: projectActions.showSnackBar
 })(withStyles(styles)(TripDetailsPage));
