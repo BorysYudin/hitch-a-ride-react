@@ -23,10 +23,11 @@ function register(data) {
             response => {
                 dispatch(success(response));
                 history.push("/");
+                return response;
             },
-            response => {
-                dispatch(failure(response));
-                return Promise.reject(response);
+            error => {
+                dispatch(failure(error));
+                return Promise.reject(error);
             }
         );
     };

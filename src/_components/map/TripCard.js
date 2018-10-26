@@ -27,9 +27,9 @@ import mapActions from "../../_actions/map.actions";
 const styles = {
     card: {
         maxWidth: 450,
-        position: "relative"
+        position: "relative",
+        margin: "0 auto"
     },
-
     selectedCard: {
         position: "absolute",
         height: "100%",
@@ -52,13 +52,16 @@ const styles = {
     },
     dialogCancelButton: {
         color: "rgba(0, 0, 0, 0.5)"
+    },
+    staticMaps: {
+        width: "100%"
     }
 };
 
-const StaticMap = props => {
-    const {route} = props;
+let StaticMap = props => {
+    const {route, classes} = props;
     return (
-        <StaticGoogleMap size="450x345" apiKey="AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk">
+        <StaticGoogleMap size="450x345" apiKey="AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk" className={classes.staticMaps}>
             <Marker
                 location={{
                     lat: route.request.origin.location.lat,
@@ -81,6 +84,8 @@ const StaticMap = props => {
         </StaticGoogleMap>
     );
 };
+
+StaticMap = withStyles(styles)(StaticMap);
 
 class TripCard extends React.Component {
     state = {

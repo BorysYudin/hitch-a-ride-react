@@ -15,6 +15,7 @@ import Done from '@material-ui/icons/Done';
 import Close from '@material-ui/icons/Close';
 import EventAvailable from '@material-ui/icons/EventAvailable';
 import Button from '@material-ui/core/Button';
+import Hidden from '@material-ui/core/Hidden';
 
 import Header from "../_components/general/Header";
 import mapActions from "../_actions/map.actions";
@@ -22,6 +23,7 @@ import mapActions from "../_actions/map.actions";
 import history from "../_helpers/history";
 import TripCard from "../_components/map/TripCard";
 import OptedTripCard from "../_components/map/OptedTripCard";
+import ShrinkedOptedTripCard from "../_components/map/ShrinkedOptedTripCard";
 
 import {
     getOptedUserTrips,
@@ -37,8 +39,9 @@ const styles = {
     },
     root: {
         maxWidth: 1700,
-        margin: "0 auto",
-        padding: "24px"
+        width: "100%",
+        padding: "24px 0",
+        margin: "0 auto"
     },
     button: {
         color: "#fff",
@@ -79,7 +82,6 @@ class ProfilePage extends React.Component {
     }
 
     render() {
-        console.log("LOCATION STATE", this.props.location.state);
         const {classes, optedTrips, cancelledTrips, completedTrips, scheduledTrips, user, userRides} = this.props;
         const {selectedType} = this.state;
 
@@ -91,7 +93,7 @@ class ProfilePage extends React.Component {
         }[selectedType];
 
         return (
-            <div>
+            <div className={classes.page}>
                 <Header/>
                 <Grid container className={classes.root} spacing={24} justify="center">
                     <Grid item xs={12} container>
@@ -107,8 +109,8 @@ class ProfilePage extends React.Component {
                             </Button>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} container spacing={24}>
-                        <Grid item xs={2}>
+                    <Grid item xs={12} container spacing={24} alignItems="center">
+                        <Grid item xs={12} md={4} lg={3} style={{alignSelf: "flex-start"}}>
                             <List component="nav">
                                 <ListItem
                                     button
@@ -152,77 +154,92 @@ class ProfilePage extends React.Component {
                                 </ListItem>
                             </List>
                         </Grid>
-                        <Grid item xs={10} container>
-                            <Grid item xs={12} container spacing={24}>
-                                {
-                                    !currentTrips || currentTrips.length === 0 ?
-                                        <Typography variant="headline" style={{color: "#999", margin: "48px auto"}}>
-                                            No trips to display
-                                        </Typography> : currentTrips.map((trip, index) => {
-                                            const route = JSON.parse(trip.route);
-                                            const date = moment.unix(trip.departure).format("DD/MM/YYYY");
-                                            const time = moment.unix(trip.departure).format("HH:mm a");
+                        <Grid item xs={12} md={8} lg={9} container spacing={24}>
+                            {
+                                !currentTrips || currentTrips.length === 0 ?
+                                    <Typography variant="headline" style={{color: "#999", margin: "48px auto"}}>
+                                        No trips to display
+                                    </Typography> : currentTrips.map((trip, index) => {
+                                        const route = JSON.parse(trip.route);
+                                        const date = moment.unix(trip.departure).format("DD/MM/YYYY");
+                                        const time = moment.unix(trip.departure).format("HH:mm a");
 
-                                            let optedTrip = null;
-                                            let optedTripCard = null;
+                                        let optedTrip = null;
+                                        let optedTripCard = null;
+                                        let shrinkedOptedTripCard = null;
 
-                                            if (user.role === "Driver") {
-                                                const filteredTrips = userRides.filter(ride => ride.driver_trip.id === trip.id);
-                                                if (filteredTrips.length) {
-                                                    optedTrip = filteredTrips[0].hitchhiker_trip;
+                                        if (user.role === "Driver") {
+                                            const filteredTrips = userRides.filter(ride => ride.driver_trip.id === trip.id);
+                                            if (filteredTrips.length) {
+                                                optedTrip = filteredTrips[0].hitchhiker_trip;
 
-                                                    optedTripCard = (
-                                                        <OptedTripCard
-                                                            driverTrip={trip}
-                                                            hitchhikerTrip={optedTrip}
-                                                        />
-                                                    );
-                                                }
-                                            } else if (user.role === "Hitchhiker") {
-                                                const filteredTrips = userRides.filter(ride => ride.hitchhiker_trip.id === trip.id);
-                                                if (filteredTrips.length) {
-                                                    optedTrip = filteredTrips[0].driver_trip;
+                                                optedTripCard = (
+                                                    <OptedTripCard
+                                                        driverTrip={trip}
+                                                        hitchhikerTrip={optedTrip}
+                                                    />
+                                                );
 
-                                                    optedTripCard = (
-                                                        <OptedTripCard
-                                                            driverTrip={optedTrip}
-                                                            hitchhikerTrip={trip}
-                                                        />
-                                                    );
-                                                }
+                                                shrinkedOptedTripCard = (
+                                                    <ShrinkedOptedTripCard
+                                                        driverTrip={trip}
+                                                        hitchhikerTrip={optedTrip}
+                                                    />
+                                                );
                                             }
+                                        } else if (user.role === "Hitchhiker") {
+                                            const filteredTrips = userRides.filter(ride => ride.hitchhiker_trip.id === trip.id);
+                                            if (filteredTrips.length) {
+                                                optedTrip = filteredTrips[0].driver_trip;
+
+                                                optedTripCard = (
+                                                    <OptedTripCard
+                                                        driverTrip={optedTrip}
+                                                        hitchhikerTrip={trip}
+                                                    />
+                                                );
+
+                                                shrinkedOptedTripCard = (
+                                                    <ShrinkedOptedTripCard
+                                                        driverTrip={optedTrip}
+                                                        hitchhikerTrip={trip}
+                                                    />
+                                                );
+                                            }
+                                        }
 
 
-                                            return trip.status === "Opted" ? (
-                                                <Grid item container xs={12} key={index}>
-                                                    <Grid item xs={2}/>
-                                                    <Grid item xs={8}>
-                                                        {optedTripCard}
-                                                    </Grid>
-                                                </Grid>
-                                            ) : (
-                                                <Grid item xs={12} lg={4} key={index}>
-                                                    {user.role === 'Driver' && trip.status === "Scheduled" ? (
-                                                        <TripCard
-                                                            route={route}
-                                                            date={date}
-                                                            time={time}
-                                                            trip={trip}
-                                                            redirectTo={`/trips/${trip.id}`}
-                                                        />
-                                                    ) : (
-                                                        <TripCard
-                                                            route={route}
-                                                            date={date}
-                                                            time={time}
-                                                            trip={trip}
-                                                        />
-                                                    )}
-                                                </Grid>
-                                            )
-                                        })
-                                }
-                            </Grid>
+                                        return trip.status === "Opted" ? (
+                                            <Grid item xs={12} key={index}>
+                                                <Hidden mdDown>
+                                                    {optedTripCard}
+                                                </Hidden>
+                                                <Hidden lgUp>
+                                                    {shrinkedOptedTripCard}
+                                                </Hidden>
+                                            </Grid>
+                                        ) : (
+                                            <Grid item xs={12} lg={6} xl={4} key={index}>
+                                                {user.role === 'Driver' && trip.status === "Scheduled" ? (
+                                                    <TripCard
+                                                        route={route}
+                                                        date={date}
+                                                        time={time}
+                                                        trip={trip}
+                                                        redirectTo={`/trips/${trip.id}`}
+                                                    />
+                                                ) : (
+                                                    <TripCard
+                                                        route={route}
+                                                        date={date}
+                                                        time={time}
+                                                        trip={trip}
+                                                    />
+                                                )}
+                                            </Grid>
+                                        )
+                                    })
+                            }
                         </Grid>
                     </Grid>
                 </Grid>

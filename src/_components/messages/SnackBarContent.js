@@ -14,6 +14,9 @@ const styles = {
     success: {
         backgroundColor: "#43a047",
     },
+    info: {
+        backgroundColor: "#1976d2",
+    },
     error: {
         backgroundColor: "#d32f2f",
     },

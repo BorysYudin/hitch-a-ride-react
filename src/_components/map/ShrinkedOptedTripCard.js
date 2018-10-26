@@ -21,6 +21,7 @@ import moment from "moment";
 const styles = {
     card: {
         width: "100%",
+        maxWidth: 450,
         margin: "0 auto",
         position: "relative"
     },
@@ -39,13 +40,12 @@ const styles = {
     staticMaps: {
         width: "100%"
     }
-
 };
 
 let StaticMap = props => {
     const {route, optedRoute, classes} = props;
     return (
-        <StaticGoogleMap size="440x380" apiKey="AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk" className={classes.staticMaps}>
+        <StaticGoogleMap size="450x380" apiKey="AIzaSyC7ZXOS5Bpp8MHRH98KJ6NPP9W-x0S3Zrk" className={classes.staticMaps}>
 
             <Marker
                 location={{
@@ -96,7 +96,7 @@ let StaticMap = props => {
 
 StaticMap = withStyles(styles)(StaticMap);
 
-const OptedTripCard = props => {
+const ShrinkedOptedTripCard = props => {
     const {driverTrip, hitchhikerTrip, classes} = props;
 
     const driverRoute = driverTrip.route && JSON.parse(driverTrip.route);
@@ -112,7 +112,13 @@ const OptedTripCard = props => {
         <Card className={classes.card}>
             <div className={classes.cardWrapper}/>
 
-            <Grid container alignItems="center">
+            <Grid container direction="column">
+                <Grid item className={classes.staticMap}>
+                    <StaticMap
+                        route={driverRoute}
+                        optedRoute={hitchhikerRoute}
+                    />
+                </Grid>
                 <Grid item xs>
                     <List>
                         <ListItem>
@@ -208,16 +214,10 @@ const OptedTripCard = props => {
                         </ListItem>
                     </List>
                 </Grid>
-                <Grid item className={classes.staticMap}>
-                    <StaticMap
-                        route={driverRoute}
-                        optedRoute={hitchhikerRoute}
-                    />
-                </Grid>
             </Grid>
 
         </Card>
     )
 };
 
-export default withStyles(styles)(OptedTripCard);
+export default withStyles(styles)(ShrinkedOptedTripCard);

@@ -81,6 +81,7 @@ class AuthPage extends React.Component {
 
     handleRegister = () => {
         const {hitchhiker, driver, tab} = this.state;
+        const { showSnackBar} = this.props;
 
         let data = null;
 
@@ -103,7 +104,13 @@ class AuthPage extends React.Component {
                 role: "Driver"
             };
 
-        this.props.register(data).catch(error => alert(error));
+        this.props.register(data).then(response => showSnackBar({
+            snackVariant: response.status === 200 ? "success" : "info",
+            snackMessage: response.data.message,
+        })).catch(error => showSnackBar({
+            snackVariant: "error",
+            snackMessage: error.response.data.message,
+        }));
     };
 
     handleOpen = name => () => {
